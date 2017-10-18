@@ -15,10 +15,20 @@ Adapted from https://github.com/commaai/research/tree/master/models
 import os
 os.environ["KERAS_BACKEND"] = "tensorflow"
 import numpy as np
-# from layers import Deconv2D
 from keras import backend as K
-from keras.layers import Input, Conv2D, ELU, Flatten, Dense, Lambda, BatchNormalization as BN
-# from keras.layers import Input, Dense, Reshape, Activation, Conv2D, LeakyReLU, Flatten, BatchNormalization as BN
+from keras.layers import (
+  Activation,
+  BatchNormalization as BN,
+  Conv2D,
+  Conv2DTranspose,
+  Cropping2D,
+  Dense, 
+  ELU,
+  Flatten,
+  Input, 
+  Lambda, 
+  Reshape,
+)
 from keras.models import Model
 
 class Vaegan():
@@ -91,17 +101,18 @@ class Vaegan():
     return Lambda(self._sample)
 
   def _decoder(self):
-    filters = 64
-    # deconvolution mirrors convolution. filters is base, starts higher.
-
-    rows = [self.img_shape[0] / i for i in [16, 8, 4, 2, 1]]
-    cols = [self.img_shape[0] / i for in in [16, 8, 4, 2, 1]]
-    # We'll upsample image closer and closer to final size layer by layer.
-    # These lists track the image size at a given convolution layer, as it gets larger
-    # FIXME: don't need array, just dims of smallest starting size.
-
-    inputs = Input(shape=(zsize,))
+    inputs = Input(shape=(self.zsize,))
     t = inputs
+
+    filters = 64
+    # deconvolution mirrors convolution, start with many filters, then
+    # shrink down to a base level of filters. This is lowest number of filters
+    # before wiring to 3 channel image (rgb).
+
+    rows = [int(np.ceil(self.img_shape[0] / i)) for i in [16., 8., 4., 2.]]
+    cols = [int(np.ceil(self.img_shape[1] / i)) for i in [16., 8., 4., 2.]]
+    # What size should image be as we create larger and larger images with
+    # each conv transpose layer.
 
     t = Dense(rows[0]*cols[0]*filters*8)(t)
     # densely connect z vector to enough units to supply first deconvolution layer.
@@ -112,27 +123,43 @@ class Vaegan():
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
-    t = Deconv2D(filters*4, 5, 5, subsample=(2, 2))(t)
-    # for 64x64 images, this is 8x8 by 256 filters
+    t = Conv2DTranspose(filters*4, 5, strides=(2))(t)
+    # Keras doesn't seem to let you specify the output rows/cols for
+    # a transpose convolution. Because of the way the kernel slides accross
+    # the input, and b/c we're using stride 2, output is double the input
+    # rows/cols plus a few more due to width of kernel. Just crop out extras
+    # before moving on.
+    # e.g. for input image of size 4x4, with 5x5 kernel and stride of 2, 
+    # we get output of 11x11, but want 8x8.
+    t = Cropping2D(cropping=self._crops(t, rows[1], cols[1]))(t)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
-    t = Deconv2D(filters*2, 5, 5, subsample=(2, 2))(t)
+    t = Conv2DTranspose(filters*2, 5, strides=(2))(t)
+    t = Cropping2D(cropping=self._crops(t, rows[2], cols[2]))(t)
     # for 64x64 images, this is 16x16 by 128 filters
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
-    t = Deconv2D(filters, 5, 5, subsample=(2, 2))(t)
+    t = Conv2DTranspose(filters, 5, strides=(2))(t)
+    t = Cropping2D(cropping=self._crops(t, rows[3], cols[3]))(t)
     # for 64x64 images, this is 32x32 by 64 filters
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
-    t = Deconv2D(self.img_shape[2], 5, 5, subsample=(2, 2))(t)
-    # for 64x64 images, this is 64x64 by 3 channels (assuming rgb images)
-    outputs = Activation('tanh')(t)
+    t = Conv2DTranspose(self.img_shape[2], 5, strides=(2))(t)
+    t = Cropping2D(cropping=self._crops(t, self.img_shape[0], self.img_shape[1]))(t)
+    # for 64x64 rgb images, this is 64x64 by 3 channels
 
+    outputs = Activation('tanh')(t)
     model = Model(inputs=inputs, outputs=outputs)
     return model
+
+  def _crops(self, tensor, want_rows, want_cols):
+    rows = K.int_shape(tensor)[1]
+    cols = K.int_shape(tensor)[2]
+    # crop at bottom and right of image
+    return ((0, rows - want_rows), (0, cols - want_cols))
 
   def _build_model(self):
     
