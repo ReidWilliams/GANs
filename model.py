@@ -8,6 +8,10 @@ https://arxiv.org/abs/1512.09300
 
 Adapted from https://github.com/commaai/research/tree/master/models
 """
+
+# Keras v.2.0.6
+# https://faroit.github.io/keras-docs/2.0.6/
+
 import os
 os.environ["KERAS_BACKEND"] = "tensorflow"
 import numpy as np
@@ -26,7 +30,7 @@ class Vaegan():
     self.batch_size = batch_size
     self._build_model()
 
-  def _build_encoder(self):
+  def _encoder(self):
     inputs = Input(shape=self.img_shape)
     
     # Base number of 2D convolution filters. 64 is from paper.
@@ -35,7 +39,12 @@ class Vaegan():
     # Using Keras functional api
     # 64 filters of 5x5 field with stride 2
     t = Conv2D(filters, 5, strides=2, data_format='channels_last')(t)
-    # Batch normalize per channel (per the paper) and channels are last dim
+    # Batch normalize per channel (per the paper) and channels are last dim.
+    # This means find average accross the batch and apply it to the inputs, 
+    # but do it separately for each channel. Also note that in the input layer,
+    # we call them channels (red, green, blue) but in deepe layers each channel
+    # is the output of a convolution filter.
+
     t = BN(axis=-1)(t)
     # Exponential linear unit for activation
     t = ELU(alpha=1)(t)
@@ -81,23 +90,61 @@ class Vaegan():
     """
     return Lambda(self._sample)
 
-    
-    # HERE: build the decoder network.
-    # PLAN: build decoder, implement custom loss function using keras backend, use
-    # MSE for loss of X vs X' (for now). Test with some images.
+  def _decoder(self):
+    filters = 64
+    # deconvolution mirrors convolution. filters is base, starts higher.
 
-  # def decode():
-  #   pass
+    rows = [self.img_shape[0] / i for i in [16, 8, 4, 2, 1]]
+    cols = [self.img_shape[0] / i for in in [16, 8, 4, 2, 1]]
+    # We'll upsample image closer and closer to final size layer by layer.
+    # These lists track the image size at a given convolution layer, as it gets larger
+    # FIXME: don't need array, just dims of smallest starting size.
+
+    inputs = Input(shape=(zsize,))
+    t = inputs
+
+    t = Dense(rows[0]*cols[0]*filters*8)(t)
+    # densely connect z vector to enough units to supply first deconvolution layer.
+    # That's rows*cols and at this layer use 8 times the base number of filters.
+
+    t = Reshape((rows[0], cols[0], filters*8))(t)
+    # for 64x64 images, this is 4x4 by 512 filters
+    t = BN(axis=-1)(t)
+    t = ELU(alpha=1)(t)
+
+    t = Deconv2D(filters*4, 5, 5, subsample=(2, 2))(t)
+    # for 64x64 images, this is 8x8 by 256 filters
+    t = BN(axis=-1)(t)
+    t = ELU(alpha=1)(t)
+
+    t = Deconv2D(filters*2, 5, 5, subsample=(2, 2))(t)
+    # for 64x64 images, this is 16x16 by 128 filters
+    t = BN(axis=-1)(t)
+    t = ELU(alpha=1)(t)
+
+    t = Deconv2D(filters, 5, 5, subsample=(2, 2))(t)
+    # for 64x64 images, this is 32x32 by 64 filters
+    t = BN(axis=-1)(t)
+    t = ELU(alpha=1)(t)
+
+    t = Deconv2D(self.img_shape[2], 5, 5, subsample=(2, 2))(t)
+    # for 64x64 images, this is 64x64 by 3 channels (assuming rgb images)
+    outputs = Activation('tanh')(t)
+
+    model = Model(inputs=inputs, outputs=outputs)
+    return model
 
   def _build_model(self):
     
-    encoder = self._build_encoder()
+    encoder = self._encoder()
     sampling_layer = self._sampling_layer()
     inputs = Input(shape=self.img_shape)
 
-    tensor = inputs
-    tensor = encoder(tensor)
-    outputs = sampling_layer(tensor)
+    # combine the pieces
+    t = inputs
+    t = self._encoder()(t)
+    t = self._sampling_layer()(t)
+    outputs = self._decoder()(t)
     
     self.model = Model(inputs=inputs, outputs=outputs)
 

@@ -4,11 +4,14 @@ import os
 os.environ["KERAS_BACKEND"] = "tensorflow"
 import tensorflow as tf
 from keras.engine import Layer, InputSpec
-from keras import backend as K, regularizers, constraints, initializations, activations
+from keras import backend as K, regularizers, constraints, initializers, activations
 
 class Deconv2D(Layer):
+    """
+    Custom deconvolution layer
+    """
     def __init__(self, nb_filter, nb_row, nb_col,
-                 init='glorot_uniform', activation='linear', weights=None,
+                 activation='linear', weights=None,
                  border_mode='valid', subsample=(1, 1), dim_ordering='tf',
                  W_regularizer=None, b_regularizer=None, activity_regularizer=None,
                  W_constraint=None, b_constraint=None, **kwargs):
@@ -18,7 +21,7 @@ class Deconv2D(Layer):
         self.nb_filter = nb_filter
         self.nb_row = nb_row
         self.nb_col = nb_col
-        self.init = initializations.get(init, dim_ordering=dim_ordering)
+        self.init = initializers.glorot_normal()
         self.activation = activations.get(activation)
         assert border_mode in {'valid', 'same'}, 'border_mode must be in {valid, same}'
         self.border_mode = border_mode
