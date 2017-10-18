@@ -30,6 +30,7 @@ from keras.layers import (
   Reshape,
 )
 from keras.models import Model
+from layers import LatentLossLayer, SamplingLayer
 
 class Vaegan():
   def __init__(self, img_shape=(64, 64, 3), zsize=128, batch_size=32):
@@ -75,30 +76,8 @@ class Vaegan():
     mean = Dense(self.zsize, activation="elu")(t)
     logsigma = Dense(self.zsize, activation="elu")(t)
 
-    model = Model(inputs=inputs, outputs=[mean, logsigma])
+    model = Model(inputs=inputs, outputs=(mean, logsigma))
     return model
-
-  def _sample(self, x):
-    """
-    Given a mean and logsigma value from the encoder, draw a zsize
-    vector from gassian and return. This is a defining feature of a variational
-    autoencoder.
-    """
-
-    mean, logsigma = x
-    sigma = K.exp(logsigma/2.0) # see Hands on machine learning, Geron, p. 435
-
-    # need to explicitly account for fact that input tensors include a whole
-    # batch. 
-    sample = K.random_normal_variable((self.batch_size, self.zsize), 0., 1.)
-    return sigma*sample + mean
-
-  def _sampling_layer(self):
-    """
-    Custom Keras layer that samples gaussian according to mean and sigma
-    from the encoder.
-    """
-    return Lambda(self._sample)
 
   def _decoder(self):
     inputs = Input(shape=(self.zsize,))
@@ -162,18 +141,17 @@ class Vaegan():
     return ((0, rows - want_rows), (0, cols - want_cols))
 
   def _build_model(self):
-    
-    encoder = self._encoder()
-    sampling_layer = self._sampling_layer()
     inputs = Input(shape=self.img_shape)
 
     # combine the pieces
     t = inputs
     t = self._encoder()(t)
-    t = self._sampling_layer()(t)
+    t = LatentLossLayer()(t)
+    t = SamplingLayer(self.zsize, batch_size=self.batch_size)(t)
     outputs = self._decoder()(t)
     
-    self.model = Model(inputs=inputs, outputs=outputs)
+    self.model = Model(inputs, outputs)
+    self.model.compile('adam', 'binary_crossentropy')
 
 
 
