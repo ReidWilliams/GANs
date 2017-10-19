@@ -1,0 +1,5 @@
+# images to video
+ffmpeg -r 10 -f image2 -s 128x128 -i %04d.jpg -vcodec libx264 -crf 15  -pix_fmt yuv420p test.mp4
+
+# video to images
+ffmpeg -i ../colbert.mp4 -vf fps=10 out%d.png

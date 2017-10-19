@@ -32,14 +32,13 @@ from keras.layers import (
 from keras.models import Model
 from layers import LatentLossLayer, SamplingLayer
 
-class Vaegan():
+class ImageAutoencoder():
   def __init__(self, img_shape=(64, 64, 3), zsize=128, batch_size=32):
     # Input image shape: x, y, channels
     self.img_shape = img_shape
     # latent (z) vector length
     self.zsize = zsize
     self.batch_size = batch_size
-    self._build_model()
 
   def _encoder(self):
     inputs = Input(shape=self.img_shape)
@@ -140,7 +139,7 @@ class Vaegan():
     # crop at bottom and right of image
     return ((0, rows - want_rows), (0, cols - want_cols))
 
-  def _build_model(self):
+  def build_model(self):
     inputs = Input(shape=self.img_shape)
 
     # combine the pieces
@@ -151,5 +150,6 @@ class Vaegan():
     outputs = self._decoder()(t)
     
     self.model = Model(inputs, outputs)
+    return self.model
 
 
