@@ -51,8 +51,8 @@ class LatentLossLayer(Layer):
 
   def call(self, inputs):
     ''' Inputs for this layer are [mean, logsigma]'''
-    # mean, logsigma = inputs
-    # loss = self._loss(mean, logsigma)
-    # self.add_loss(loss, inputs=inputs)
+    mean, logsigma = inputs
+    loss = self._loss(mean, logsigma)
+    self.add_loss(loss, inputs=inputs)
     # add the loss and just pass inputs on as outputs
     return inputs
