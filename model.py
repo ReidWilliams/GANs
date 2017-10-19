@@ -131,7 +131,7 @@ class Vaegan():
     t = Cropping2D(cropping=self._crops(t, self.img_shape[0], self.img_shape[1]))(t)
     # for 64x64 rgb images, this is 64x64 by 3 channels
 
-    outputs = Activation('tanh')(t)
+    outputs = Activation('sigmoid')(t)
     model = Model(inputs=inputs, outputs=outputs)
     return model
 
