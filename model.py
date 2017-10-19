@@ -30,6 +30,7 @@ from keras.layers import (
   Reshape,
 )
 from keras.models import Model
+from keras.optimizers import Adam
 from layers import LatentLossLayer, SamplingLayer
 
 class Vaegan():
@@ -151,7 +152,7 @@ class Vaegan():
     outputs = self._decoder()(t)
     
     self.model = Model(inputs, outputs)
-    self.model.compile('adam', 'binary_crossentropy')
+    self.model.compile(Adam(lr=.0003, 'binary_crossentropy')
 
 
 
