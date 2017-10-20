@@ -65,7 +65,7 @@ class Discriminator():
 
     similarity = Flatten()(t)
      
-    t = Dense(512)(t)
+    t = Dense(512)(similarity)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
