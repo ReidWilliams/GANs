@@ -132,6 +132,7 @@ class Autoencoder():
 
     outputs = Activation('sigmoid')(t)
     model = Model(inputs=inputs, outputs=outputs)
+    self.decoder = model
     return model
 
   def _crops(self, tensor, want_rows, want_cols):
