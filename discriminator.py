@@ -71,6 +71,7 @@ class Discriminator():
 
     # output prediction
     prediction = Dense(1, activation='sigmoid')(t)
+    # for some reason this is outputting (8, 5, 5, 1)
   
     model = Model(inputs=inputs, outputs=(prediction, similarity))
     return model
