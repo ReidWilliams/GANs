@@ -41,7 +41,7 @@ class Discriminator():
     self.img_shape = img_shape
     self.batch_size = batch_size
 
-  def _discriminator(self):
+  def build_model(self):
     inputs = Input(shape=self.img_shape)
     
     # architecture is similar to autoencoder's encoder. See that for 
@@ -64,20 +64,30 @@ class Discriminator():
     t = ELU(alpha=1)(t)
 
     similarity = Flatten()(t)
+    self.similarity_model = Model(inputs=inputs, outputs=similarity)
      
     t = Dense(512)(similarity)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
-    # output prediction
-    prediction = Dense(1, activation='sigmoid')(t)
-    # for some reason this is outputting (8, 5, 5, 1)
+    # output classification: probability an image is fake
+    classification = Dense(1, activation='sigmoid')(t)
   
-    model = Model(inputs=inputs, outputs=(prediction, similarity))
+    model = Model(inputs=inputs, outputs=classification)
+    self.model = model
     return model
 
-  def build_model(self):
-    self.model = self._discriminator()
-    return self.model
+  def diff_loss(self, x1, x2):
+    ''' Uses similarity layer to return a loss of difference between
+    two images. Arguments are image batches. This function operates on
+    and returns tensors. '''
+
+    y1 = self.similarity_model(x1)
+    y2 = self.similarity_model(x2)
+    # return K.mean(K.square(y2 - y1), axis=-1)
+    return K.mean(K.square(y2 - y1), axis=1)
+
+
+
 
 
