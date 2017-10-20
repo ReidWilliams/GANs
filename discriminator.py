@@ -32,10 +32,10 @@ from keras.layers import (
 from keras.models import Model
 
 class Discriminator():
-    ''' Discriminator network. Takes in image and outputs predition of whether
-    image is real or fake. Has two outputs. One is scalar that is probability
-    that an image is fake. Other is a vector that can be used to determine
-    similarity between two candidate images. '''
+  ''' Discriminator network. Takes in image and outputs predition of whether
+  image is real or fake. Has two outputs. One is scalar that is probability
+  that an image is fake. Other is a vector that can be used to determine
+  similarity between two candidate images. '''
   def __init__(self, img_shape=(64, 64, 3), batch_size=32):
     # Input image shape: x, y, channels
     self.img_shape = img_shape

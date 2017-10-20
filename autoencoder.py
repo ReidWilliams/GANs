@@ -33,7 +33,7 @@ from keras.models import Model
 from layers import LatentLossLayer, SamplingLayer
 
 class Autoencoder():
-    ''' Autoencoder including encode, decode networks. '''
+  ''' Autoencoder including encode, decode networks. '''
   def __init__(self, img_shape=(64, 64, 3), zsize=128, batch_size=32):
     # Input image shape: x, y, channels
     self.img_shape = img_shape
