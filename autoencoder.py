@@ -1,4 +1,4 @@
-"""Keras based implementation of Autoencoding beyond pixels using a learned similarity metric
+'''Keras based implementation of Autoencoding beyond pixels using a learned similarity metric
 
 References:
 
@@ -7,7 +7,7 @@ by: Anders Boesen Lindbo Larsen, Soren Kaae Sonderby, Hugo Larochelle, Ole Winth
 https://arxiv.org/abs/1512.09300
 
 Adapted from https://github.com/commaai/research/tree/master/models
-"""
+'''
 
 # Keras v.2.0.6
 # https://faroit.github.io/keras-docs/2.0.6/
@@ -32,7 +32,8 @@ from keras.layers import (
 from keras.models import Model
 from layers import LatentLossLayer, SamplingLayer
 
-class ImageAutoencoder():
+class Autoencoder():
+    ''' Autoencoder including encode, decode networks. '''
   def __init__(self, img_shape=(64, 64, 3), zsize=128, batch_size=32):
     # Input image shape: x, y, channels
     self.img_shape = img_shape

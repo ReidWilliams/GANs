@@ -2,6 +2,8 @@ from keras import backend as K
 from keras.engine.topology import Layer
 
 class SamplingLayer(Layer):
+  ''' Used by autoencoder to output gaussian sample based on
+  mean and sigma values from encoder. '''
   def __init__(self, zsize, batch_size=32, **kwargs):
     super(SamplingLayer, self).__init__(**kwargs)
     self.zsize = zsize
