@@ -44,6 +44,8 @@ class Discriminator():
   def build_model(self):
     inputs = Input(shape=self.img_shape)
     
+    print(K.int_shape(inputs))
+
     # architecture is similar to autoencoder's encoder. See that for 
     # detailed comments.
     t = inputs
@@ -51,19 +53,31 @@ class Discriminator():
     # according to paper, no BN after first conv layer
     t = ELU(alpha=1)(t)
 
+    print(K.int_shape(t))
+
     t = Conv2D(128, 5, strides=2, data_format='channels_last')(t)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
-    t = Conv2D(256, 5, strides=2, data_format='channels_last')(t)
-    t = BN(axis=-1)(t)
-    t = ELU(alpha=1)(t)
+    print(K.int_shape(t))
 
     t = Conv2D(256, 5, strides=2, data_format='channels_last')(t)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
+
+    print(K.int_shape(t))
+
+    t = Conv2D(256, 5, strides=2, data_format='channels_last')(t)
+    t = BN(axis=-1)(t)
+    t = ELU(alpha=1)(t)
+
+    print(K.int_shape(t))
+
+
 
     similarity = Flatten()(t)
+
+    print(K.int_shape(similarity))
     self.similarity_model = Model(inputs=inputs, outputs=similarity)
      
     t = Dense(512)(similarity)
