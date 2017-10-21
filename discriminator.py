@@ -73,8 +73,6 @@ class Discriminator():
 
     print(K.int_shape(t))
 
-
-
     similarity = Flatten()(t)
 
     print(K.int_shape(similarity))
@@ -91,10 +89,20 @@ class Discriminator():
     self.model = model
     return model
 
-  def diff_loss(self, x1, x2):
+  def diff_loss(self, _x1, _x2):
     ''' Uses similarity layer to return a loss of difference between
     two images. Arguments are image batches. This function operates on
     and returns tensors. '''
+
+    # print('diff loss shapes')
+    # print(K.int_shape(x1))
+
+    # z = K.reshape(x1, (32, 64, 64, 3))
+    # print('reshaped:')
+    # print(K.int_shape(z))
+
+    x1 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
+    x2 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
 
     y1 = self.similarity_model(x1)
     y2 = self.similarity_model(x2)
