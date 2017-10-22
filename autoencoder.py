@@ -159,7 +159,7 @@ class Autoencoder():
       return self.model
 
   def mode(self, mode):
-    assert mode in ('train_encoder', 'train_decoder')
+    assert mode in ('train_encoder', 'train_decoder', 'train_both')
     if (mode == 'train_encoder'):
         for layer in self.encoder.layers: layer.trainable = True
         self.latent_loss_layer.trainable = True
@@ -173,6 +173,13 @@ class Autoencoder():
         self.latent_loss_layer.trainable = False
         self.latent_loss_layer.use_loss(False)
         self.sampling_layer.trainable = False
+        for layer in self.decoder.layers: layer.trainable = True
+
+    if (mode == 'train_both'):
+        for layer in self.encoder.layers: layer.trainable = True
+        self.latent_loss_layer.trainable = True
+        self.latent_loss_layer.use_loss(True)
+        self.sampling_layer.trainable = True
         for layer in self.decoder.layers: layer.trainable = True
 
 

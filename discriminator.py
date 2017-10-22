@@ -44,8 +44,6 @@ class Discriminator():
   def build_model(self):
     inputs = Input(shape=self.img_shape)
     
-    print(K.int_shape(inputs))
-
     # architecture is similar to autoencoder's encoder. See that for 
     # detailed comments.
     t = inputs
@@ -53,25 +51,17 @@ class Discriminator():
     # according to paper, no BN after first conv layer
     t = ELU(alpha=1)(t)
 
-    print(K.int_shape(t))
-
     t = Conv2D(128, 5, strides=2, data_format='channels_last')(t)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
-    print(K.int_shape(t))
-
     t = Conv2D(256, 5, strides=2, data_format='channels_last')(t)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
-    print(K.int_shape(t))
-
     t = Conv2D(256, 5, strides=2, data_format='channels_last')(t)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
-
-    print(K.int_shape(t))
 
     similarity = Flatten()(t)
 
@@ -94,13 +84,9 @@ class Discriminator():
     two images. Arguments are image batches. This function operates on
     and returns tensors. '''
 
-    # print('diff loss shapes')
-    # print(K.int_shape(x1))
-
-    # z = K.reshape(x1, (32, 64, 64, 3))
-    # print('reshaped:')
-    # print(K.int_shape(z))
-
+    # don't totally understand, but _x1 and _x2 come is as tensors shaped
+    # (None, None, None, None) and was getting exceptions, these lines
+    # fixed it. I'm assuming the model just needed explicit tensor shape
     x1 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
     x2 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
 
