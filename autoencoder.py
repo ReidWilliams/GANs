@@ -30,7 +30,7 @@ from keras.layers import (
   Reshape,
 )
 from keras.models import Model
-from layers import LatentLossLayer, SamplingLayer
+from layers import LatentLossLayer, ReshapeLayer, SamplingLayer
 
 class Autoencoder():
   ''' Autoencoder including encode, decode networks. '''
@@ -40,6 +40,7 @@ class Autoencoder():
     # latent (z) vector length
     self.zsize = zsize
     self.batch_size = batch_size
+    self.build_model()
 
   def _encoder(self):
     inputs = Input(shape=self.img_shape)
@@ -72,11 +73,11 @@ class Autoencoder():
      
     # In a variational autoencoder, the encoder outputs a mean and sigma vector
     # from which samples are drawn. In practice, treat the second output as
-    # log(sigma**2), but we'll call it logsigma
-    mean = Dense(self.zsize, activation="elu")(t)
-    logsigma = Dense(self.zsize, activation="elu")(t)
+    # log(sigma**2), but we'll call it logsigma. Each of mean and logsigma are
+    # zsize vectors, but here we pack them into a single zsize*2 vector.
+    mean_logsigma = Dense(self.zsize*2, activation="elu")(t)
 
-    model = Model(inputs=inputs, outputs=(mean, logsigma))
+    model = Model(inputs=inputs, outputs=mean_logsigma)
     self.encoder = model
     return model
 
@@ -111,6 +112,7 @@ class Autoencoder():
     # before moving on.
     # e.g. for input image of size 4x4, with 5x5 kernel and stride of 2, 
     # we get output of 11x11, but want 8x8.
+
     t = Cropping2D(cropping=self._crops(t, rows[1], cols[1]))(t)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
@@ -131,7 +133,10 @@ class Autoencoder():
     t = Cropping2D(cropping=self._crops(t, self.img_shape[0], self.img_shape[1]))(t)
     # for 64x64 rgb images, this is 64x64 by 3 channels
 
-    outputs = Activation('sigmoid')(t)
+    t = Activation('sigmoid')(t)
+    reshape_layer = ReshapeLayer((self.batch_size,) + self.img_shape)
+    outputs = t
+   
     model = Model(inputs=inputs, outputs=outputs)
     self.decoder = model
     return model
@@ -145,7 +150,7 @@ class Autoencoder():
   def build_model(self):
       inputs = Input(shape=self.img_shape)
 
-      self.latent_loss_layer = LatentLossLayer()
+      self.latent_loss_layer = LatentLossLayer(self.zsize)
       self.sampling_layer = SamplingLayer(self.zsize, batch_size=self.batch_size)
 
       # combine the pieces
@@ -180,10 +185,6 @@ class Autoencoder():
         self.latent_loss_layer.use_loss(True)
         self.sampling_layer.trainable = True
         for layer in self.decoder.layers: layer.trainable = True
-
-
-
-
 
 
 

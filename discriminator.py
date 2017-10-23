@@ -40,6 +40,7 @@ class Discriminator():
     # Input image shape: x, y, channels
     self.img_shape = img_shape
     self.batch_size = batch_size
+    self.build_model()
 
   def build_model(self):
     inputs = Input(shape=self.img_shape)
@@ -77,25 +78,6 @@ class Discriminator():
     model = Model(inputs=inputs, outputs=classification)
     self.model = model
     return model
-
-  def diff_loss(self, x1, x2):
-    ''' Uses similarity layer to return a loss of difference between
-    two images. Arguments are image batches. This function operates on
-    and returns tensors. '''
-
-    # don't totally understand, but _x1 and _x2 come is as tensors shaped
-    # (None, None, None, None) and was getting exceptions, these lines
-    # fixed it. I'm assuming the model just needed explicit tensor shape
-
-    #x1 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
-    #x2 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
-
-    print(K.int_shape(x1))
-
-    y1 = self.similarity_model(x1)
-    y2 = self.similarity_model(x2)
-
-    return K.mean(K.square(y2 - y1), axis=1)
 
 
 
