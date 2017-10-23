@@ -87,12 +87,13 @@ class Discriminator():
     # don't totally understand, but _x1 and _x2 come is as tensors shaped
     # (None, None, None, None) and was getting exceptions, these lines
     # fixed it. I'm assuming the model just needed explicit tensor shape
+
     x1 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
     x2 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
 
     y1 = self.similarity_model(x1)
     y2 = self.similarity_model(x2)
-    # return K.mean(K.square(y2 - y1), axis=-1)
+
     return K.mean(K.square(y2 - y1), axis=1)
 
 

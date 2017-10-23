@@ -167,7 +167,6 @@ class Autoencoder():
         self.sampling_layer.trainable = True
         for layer in self.decoder.layers: layer.trainable = False
         
-
     if (mode == 'train_decoder'):
         for layer in self.encoder.layers: layer.trainable = False
         self.latent_loss_layer.trainable = False
