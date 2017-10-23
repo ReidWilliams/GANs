@@ -43,7 +43,7 @@ class Autoencoder():
 
   def _encoder(self):
     inputs = Input(shape=self.img_shape)
-    
+     
     # Base number of 2D convolution filters. 64 is from paper.
     filters = 64
     t = inputs
@@ -69,7 +69,7 @@ class Autoencoder():
     t = ELU(alpha=1)(t)
 
     t = Flatten()(t)
-    
+     
     # In a variational autoencoder, the encoder outputs a mean and sigma vector
     # from which samples are drawn. In practice, treat the second output as
     # log(sigma**2), but we'll call it logsigma
@@ -77,6 +77,7 @@ class Autoencoder():
     logsigma = Dense(self.zsize, activation="elu")(t)
 
     model = Model(inputs=inputs, outputs=(mean, logsigma))
+    self.encoder = model
     return model
 
   def _decoder(self):
@@ -142,16 +143,47 @@ class Autoencoder():
     return ((0, rows - want_rows), (0, cols - want_cols))
 
   def build_model(self):
-    inputs = Input(shape=self.img_shape)
+      inputs = Input(shape=self.img_shape)
 
-    # combine the pieces
-    t = inputs
-    t = self._encoder()(t)
-    t = LatentLossLayer()(t)
-    t = SamplingLayer(self.zsize, batch_size=self.batch_size)(t)
-    outputs = self._decoder()(t)
-    
-    self.model = Model(inputs, outputs)
-    return self.model
+      self.latent_loss_layer = LatentLossLayer()
+      self.sampling_layer = SamplingLayer(self.zsize, batch_size=self.batch_size)
+
+      # combine the pieces
+      t = inputs
+      t = self._encoder()(t)
+      t = self.latent_loss_layer(t)
+      t = self.sampling_layer(t)
+      outputs = self._decoder()(t)
+      
+      self.model = Model(inputs, outputs)
+      return self.model
+
+  def mode(self, mode):
+    assert mode in ('train_encoder', 'train_decoder', 'train_both')
+    if (mode == 'train_encoder'):
+        for layer in self.encoder.layers: layer.trainable = True
+        self.latent_loss_layer.trainable = True
+        self.latent_loss_layer.use_loss(True)
+        self.sampling_layer.trainable = True
+        for layer in self.decoder.layers: layer.trainable = False
+        
+    if (mode == 'train_decoder'):
+        for layer in self.encoder.layers: layer.trainable = False
+        self.latent_loss_layer.trainable = False
+        self.latent_loss_layer.use_loss(False)
+        self.sampling_layer.trainable = False
+        for layer in self.decoder.layers: layer.trainable = True
+
+    if (mode == 'train_both'):
+        for layer in self.encoder.layers: layer.trainable = True
+        self.latent_loss_layer.trainable = True
+        self.latent_loss_layer.use_loss(True)
+        self.sampling_layer.trainable = True
+        for layer in self.decoder.layers: layer.trainable = True
+
+
+
+
+
 
 

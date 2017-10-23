@@ -41,7 +41,7 @@ class Discriminator():
     self.img_shape = img_shape
     self.batch_size = batch_size
 
-  def _discriminator(self):
+  def build_model(self):
     inputs = Input(shape=self.img_shape)
     
     # architecture is similar to autoencoder's encoder. See that for 
@@ -64,19 +64,39 @@ class Discriminator():
     t = ELU(alpha=1)(t)
 
     similarity = Flatten()(t)
+
+    print(K.int_shape(similarity))
+    self.similarity_model = Model(inputs=inputs, outputs=similarity)
      
-    t = Dense(512)(t)
+    t = Dense(512)(similarity)
     t = BN(axis=-1)(t)
     t = ELU(alpha=1)(t)
 
-    # output prediction
-    prediction = Dense(1, activation='sigmoid')(t)
+    # output classification: probability an image is fake
+    classification = Dense(1, activation='sigmoid')(t)
   
-    model = Model(inputs=inputs, outputs=(prediction, similarity))
+    model = Model(inputs=inputs, outputs=classification)
+    self.model = model
     return model
 
-  def build_model(self):
-    self.model = self._discriminator()
-    return self.model
+  def diff_loss(self, _x1, _x2):
+    ''' Uses similarity layer to return a loss of difference between
+    two images. Arguments are image batches. This function operates on
+    and returns tensors. '''
+
+    # don't totally understand, but _x1 and _x2 come is as tensors shaped
+    # (None, None, None, None) and was getting exceptions, these lines
+    # fixed it. I'm assuming the model just needed explicit tensor shape
+
+    x1 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
+    x2 = K.reshape(_x1, (self.batch_size,) + self.img_shape)
+
+    y1 = self.similarity_model(x1)
+    y2 = self.similarity_model(x2)
+
+    return K.mean(K.square(y2 - y1), axis=1)
+
+
+
 
 

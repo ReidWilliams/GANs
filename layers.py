@@ -41,6 +41,8 @@ class LatentLossLayer(Layer):
   '''
   def __init__(self, **kwargs):
     super(LatentLossLayer, self).__init__(**kwargs)
+    # set to 1 or 0 to include this layer's loss
+    self._use_loss = K.variable(1.0)
 
   def build(self, input_shape):
     super(LatentLossLayer, self).build(input_shape)
@@ -49,7 +51,13 @@ class LatentLossLayer(Layer):
     return input_shape
 
   def _loss(self, mean, logsigma):
-    return 0.5 * K.sum(K.exp(logsigma) + K.square(mean) - 1 - logsigma)
+    return self._use_loss * 0.5 * K.sum(K.exp(logsigma) + K.square(mean) - 1 - logsigma)
+
+  def use_loss(self, b):
+    if b == True:
+      self._use_loss = K.variable(1.0)
+    else:
+      self._use_loss = K.variable(0.0)
 
   def call(self, inputs):
     ''' Inputs for this layer are [mean, logsigma]'''
