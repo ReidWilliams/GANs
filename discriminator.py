@@ -65,7 +65,6 @@ class Discriminator():
 
     similarity = Flatten()(t)
 
-    print(K.int_shape(similarity))
     self.similarity_model = Model(inputs=inputs, outputs=similarity)
      
     t = Dense(512)(similarity)
