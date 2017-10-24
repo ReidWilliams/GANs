@@ -12,8 +12,8 @@ class Discriminator():
     # Input image shape: x, y, channels
     self.img_shape = img_shape
 
-  def disc(self, inputs, scope='discriminator'):
-    with tf.variable_scope(scope, reuse=True):
+  def disc(self, inputs, scope='discriminator', reuse=None):
+    with tf.variable_scope(scope, reuse=reuse):
     
       # architecture is similar to autoencoder's encoder. See that for 
       # detailed comments.
