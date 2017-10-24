@@ -8,13 +8,13 @@ class Discriminator():
   image is real or fake. Has two outputs. One is scalar that is probability
   that an image is fake. Other is a vector that can be used to determine
   similarity between two candidate images. '''
-  def __init__(self, img_shape=(64, 64, 3), reuse=False):
+  def __init__(self, img_shape=(64, 64, 3), scope='discriminator'):
     # Input image shape: x, y, channels
     self.img_shape = img_shape
-    self.reuse = reuse
+    self.scope = scope
 
   def disc(self, inputs):
-    with tf.variable_scope('discriminator', reuse=self.reuse):
+    with tf.variable_scope(self.scope):
     
       # architecture is similar to autoencoder's encoder. See that for 
       # detailed comments.
