@@ -5,7 +5,7 @@ he_init = tf.contrib.layers.variance_scaling_initializer
 
 class Autoencoder():
   ''' Autoencoder including encode, decode networks. '''
-  def __init__(self, img_shape=(64, 64, 3), zsize=128, reuse=True):
+  def __init__(self, img_shape=(64, 64, 3), zsize=128, reuse=False):
     # Input image shape: x, y, channels
     self.img_shape = img_shape
     # latent (z) vector length
