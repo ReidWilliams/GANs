@@ -37,12 +37,12 @@ class Discriminator():
       self.similarity = tf.contrib.layers.flatten(t)
 
       t = tf.layers.dense(self.similarity, 512)
-      t = tf.layers.batch_normalization(t)
+      t = tf.layers.batch_normalization(t) # do I need axis=-1?
       t = tf.nn.elu(t)
 
       # output classification: probability an image is fake
-      t = tf.layers.dense(t, 1)
-      classification = tf.sigmoid(t)
+      self.logits = tf.layers.dense(t, 1)
+      classification = tf.sigmoid(self.logits)
     return classification
 
 
