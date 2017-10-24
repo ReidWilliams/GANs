@@ -15,7 +15,7 @@ class Autoencoder():
     ''' Returns encoder graph. Inputs is a placeholder of size
     (None, rows, cols, channels) '''
      
-    with tf.variable_scope(scope):
+    with tf.variable_scope(scope, reuse=True):
       # Base number of 2D convolution filters. 64 is from paper.
       filters = 64
       # 64 filters of 5x5 field with stride 2
@@ -55,7 +55,7 @@ class Autoencoder():
     return 0.5 * tf.reduce_sum(tf.exp(self.logsigmas) + tf.square(self.means) - 1 - self.logsigmas)
 
   def decoder(self, inputs, scope='decoder'):
-    with tf.variable_scope(scope):
+    with tf.variable_scope(scope, reuse=True):
       filters = 64
       # deconvolution mirrors convolution, start with many filters, then
       # shrink down to a base level of filters. This is lowest number of filters

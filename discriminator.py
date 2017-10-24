@@ -13,7 +13,7 @@ class Discriminator():
     self.img_shape = img_shape
 
   def disc(self, inputs, scope='discriminator'):
-    with tf.variable_scope(scope):
+    with tf.variable_scope(scope, reuse=True):
     
       # architecture is similar to autoencoder's encoder. See that for 
       # detailed comments.
