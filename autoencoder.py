@@ -5,17 +5,20 @@ he_init = tf.contrib.layers.variance_scaling_initializer
 
 class Autoencoder():
   ''' Autoencoder including encode, decode networks. '''
-  def __init__(self, img_shape=(64, 64, 3), zsize=128, batch_size=32):
+  def __init__(self, img_shape=(64, 64, 3), zsize=128, reuse=True):
     # Input image shape: x, y, channels
     self.img_shape = img_shape
     # latent (z) vector length
     self.zsize = zsize
+    # reuse tf variables, so multiple instances of this class
+    # will share weights unless set to false
+    self.reuse = reuse
 
   def encoder(self, inputs):
     ''' Returns encoder graph. Inputs is a placeholder of size
     (None, rows, cols, channels) '''
      
-    with tf.variable_scope('encoder'):
+    with tf.variable_scope('encoder', reuse=self.reuse):
       # Base number of 2D convolution filters. 64 is from paper.
       filters = 64
       # 64 filters of 5x5 field with stride 2
@@ -55,7 +58,7 @@ class Autoencoder():
     return 0.5 * tf.reduce_sum(tf.exp(self.logsigmas) + tf.square(self.means) - 1 - self.logsigmas)
 
   def decoder(self, inputs):
-    with tf.variable_scope('decoder'):
+    with tf.variable_scope('decoder', reuse=self.reuse):
       filters = 64
       # deconvolution mirrors convolution, start with many filters, then
       # shrink down to a base level of filters. This is lowest number of filters
@@ -107,7 +110,7 @@ class Autoencoder():
       # for 64x64 rgb images, this is 64x64 by 3 channels
 
       t = tf.sigmoid(self.logits)
-      
+
     return t
 
 
