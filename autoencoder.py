@@ -10,7 +10,6 @@ class Autoencoder():
     self.img_shape = img_shape
     # latent (z) vector length
     self.zsize = zsize
-    self.batch_size = batch_size
 
   def encoder(self, inputs):
     ''' Returns encoder graph. Inputs is a placeholder of size
@@ -70,7 +69,7 @@ class Autoencoder():
     # densely connect z vector to enough units to supply first deconvolution layer.
     # That's rows*cols and at this layer use 8 times the base number of filters.
 
-    t = tf.reshape(t, (self.batch_size, rows[0], cols[0], filters*8))
+    t = tf.reshape(t, (tf.shape(t)[0], rows[0], cols[0], filters*8))
     # for 64x64 images, this is 4x4 by 512 filters
     t = tf.layers.batch_normalization(t, axis=-1)
     t = tf.nn.elu(t)
