@@ -132,7 +132,7 @@ batches = int(float(training_set_size) / batch_size)
 epochs = 1000000
 
 for epoch in range(epochs):
-    print ('epoch %s ' % epoch, end='')
+    print ('epoch %s ' % epoch, end='', flush=True)
     zdraws = np.random.normal(size=(training_set_size, zsize))
     
     # train discriminator
@@ -140,27 +140,27 @@ for epoch in range(epochs):
         xfeed = training[batch*batch_size:(batch+1)*batch_size]
         zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
         sess.run(train_disc, feed_dict={X: xfeed, Z: zfeed})
-        print('.', end='')
+        print('.', end='', flush=True)
          
     # train encoder
     for batch in range(batches):
         xfeed = training[batch*batch_size:(batch+1)*batch_size]
         sess.run(train_encoder, feed_dict={X: xfeed})
-        print('.', end='')
+        print('.', end='', flush=True)
         
     # train decoder
     for batch in range(batches):
         xfeed = training[batch*batch_size:(batch+1)*batch_size]
         zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
         sess.run(train_decoder, feed_dict={X: xfeed, Z: zfeed})
-        print('.', end='')
+        print('.', end='', flush=True)
 
     # report loss on the first batch
     xfeed = training[:batch_size]
     zfeed = zdraws[:batch_size]
     y = disc_loss.eval(feed_dict={X: xfeed, Z: zfeed})        
-    print('\ndiscriminator loss: %s' % y)
+    print('\ndiscriminator loss: %s' % y, flush=True)
         
     if (epoch % 4 == 0):
-        print('saving session')
+        print('saving session', flush=True)
         saver.save(sess, model_save_path)
