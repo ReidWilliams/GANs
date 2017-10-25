@@ -57,7 +57,7 @@ for epoch in range(epochs):
 	  print ('.', end='', flush=True)
 
 	if (epoch % 10 == 0):
-	  print('saving session' flush=True)
+	  print('saving session', flush=True)
 	  saver.save(sess, model_save_path)
 
 	  xfeed = training[:batch_size]
