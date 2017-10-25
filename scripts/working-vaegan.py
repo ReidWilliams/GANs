@@ -1,7 +1,7 @@
 img_directory = '/home/ec2-user/img_align_celeba'
 model_save_path = '/home/ec2-user/vaegan-celeba.ckpt'
 batch_size = 64
-training_set_size = 5000
+training_set_size = 512
 img_size = 64
 zsize = 128
 
