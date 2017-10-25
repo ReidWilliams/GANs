@@ -125,12 +125,11 @@ disc_loss_summary = tf.summary.scalar('disc loss', disc_loss)
 encoder_loss_summary = tf.summary.scalar('encoder loss', encoder_loss)
 decoder_loss_summary = tf.summary.scalar('decoder loss', decoder_loss)
 merged_summary = tf.summary.merge_all()
-writer = tf.summary.FileWriter(log_path, sess.graph)
-
 
 sess = tf.InteractiveSession()
 # tf.global_variables_initializer().run()
 saver.restore(sess, model_save_path)
+writer = tf.summary.FileWriter(log_path, sess.graph)
 
 # Train
 
