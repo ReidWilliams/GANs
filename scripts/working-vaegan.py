@@ -24,6 +24,8 @@ from discriminator import Discriminator
 
 tf.reset_default_graph()
 
+print('building graph')
+
 # input images feed
 X = tf.placeholder(tf.float32, [None, img_size, img_size, 3])
 
@@ -57,6 +59,7 @@ disc_z_obj.disc(decoder_z, reuse=True)
 disc_z_logits = disc_z_obj.logits
 
 
+print('building losses')
 # Loss functions and optimizers
 
 learning_rate = 0.00001
@@ -118,6 +121,8 @@ saver.restore(sess, model_save_path)
 
 # Train
 
+print('training')
+
 import math
 batches = int(float(training_set_size) / batch_size)
 epochs = 1e6
@@ -148,6 +153,6 @@ for epoch in range(epochs):
         
     print('')
         
-    if (epoch % 10 == 0):
+    if (epoch % 4 == 0):
         print('saving session')
         saver.save(sess, model_save_path)
