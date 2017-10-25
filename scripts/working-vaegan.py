@@ -104,10 +104,6 @@ disc_loss = disc_vae_loss + disc_x_loss + disc_z_loss
 encoder_loss = latent_loss + similarity_loss
 decoder_loss = gamma * similarity_loss - disc_loss
 
-# traditional pixel wise loss between input image and decoded image
-pixel_xentropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=X, logits=vae.logits)
-pixel_loss = tf.reduce_sum(pixel_xentropy)
-
 # get weights to train for each of encoder, decoder, etc.
 # pass this to optimizer so it only trains w.r.t the network
 # we want to train and just uses other parts of the network as is
@@ -123,7 +119,6 @@ train_encoder = tf.train.AdamOptimizer(learning_rate=learning_rate)     .minimiz
 train_decoder = tf.train.AdamOptimizer(learning_rate=learning_rate)     .minimize(decoder_loss, var_list=decoder_vars)
     
 train_disc = tf.train.AdamOptimizer(learning_rate=learning_rate)     .minimize(disc_loss, var_list=disc_vars)
-train_vae_pixel_loss = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(pixel_loss, var_list=(encoder_vars + decoder_vars))
 
 saver = tf.train.Saver()
 
@@ -131,7 +126,6 @@ saver = tf.train.Saver()
 disc_loss_summary = tf.summary.scalar('disc loss', disc_loss)
 encoder_loss_summary = tf.summary.scalar('encoder loss', encoder_loss)
 decoder_loss_summary = tf.summary.scalar('decoder loss', decoder_loss)
-vae_pixel_loss_summary = tf.summary.scalar('whole vae', pixel_loss)
 merged_summary = tf.summary.merge_all()
 
 sess = tf.InteractiveSession()
@@ -159,22 +153,16 @@ for epoch in range(epochs):
     #     print('.', end='', flush=True)
          
     # train encoder
-    # for batch in range(batches):
-    #     xfeed = training[batch*batch_size:(batch+1)*batch_size]
-    #     sess.run(train_encoder, feed_dict={X: xfeed})
-    #     print('.', end='', flush=True)
-        
-    # train decoder
-    # for batch in range(batches):
-    #     xfeed = training[batch*batch_size:(batch+1)*batch_size]
-    #     zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
-    #     sess.run(train_decoder, feed_dict={X: xfeed, Z: zfeed})
-    #     print('.', end='', flush=True)
-
-    # train whole vae using pixel loss
     for batch in range(batches):
         xfeed = training[batch*batch_size:(batch+1)*batch_size]
-        sess.run(train_vae_pixel_loss, feed_dict={X: xfeed})
+        sess.run(train_encoder, feed_dict={X: xfeed})
+        print('.', end='', flush=True)
+        
+    # train decoder
+    for batch in range(batches):
+        xfeed = training[batch*batch_size:(batch+1)*batch_size]
+        zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
+        sess.run(train_decoder, feed_dict={X: xfeed, Z: zfeed})
         print('.', end='', flush=True)
     
     if (epoch % 4 == 0):
