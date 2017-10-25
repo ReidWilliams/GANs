@@ -146,11 +146,11 @@ for epoch in range(epochs):
     zdraws = np.random.normal(size=(training_set_size, zsize))
     
     # train discriminator
-    for batch in range(batches):
-        xfeed = training[batch*batch_size:(batch+1)*batch_size]
-        zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
-        sess.run(train_disc, feed_dict={X: xfeed, Z: zfeed})
-        print('.', end='', flush=True)
+    # for batch in range(batches):
+    #     xfeed = training[batch*batch_size:(batch+1)*batch_size]
+    #     zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
+    #     sess.run(train_disc, feed_dict={X: xfeed, Z: zfeed})
+    #     print('.', end='', flush=True)
          
     # train encoder
     for batch in range(batches):
