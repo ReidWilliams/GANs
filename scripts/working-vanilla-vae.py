@@ -38,7 +38,6 @@ saver = tf.train.Saver()
 # collect data for tensorboard
 loss_summary = tf.summary.scalar('loss', loss)
 merged_summary = tf.summary.merge_all()
-writer = tf.summary.FileWriter(log_directory, sess.graph)
 
 sess = tf.InteractiveSession()
 try:
@@ -47,6 +46,8 @@ try:
 except:
 	print('failed to restore session, creating a new one')
 	tf.global_variables_initializer().run()
+
+writer = tf.summary.FileWriter(log_directory, sess.graph)
 
 import math
 epochs = 10000
