@@ -13,6 +13,9 @@ import scipy as sp
 import os
 from utils import imshow, resize_crop, load_img
 
+print('loading and resizing training data')
+print(img_directory)
+
 # load training data
 training = np.array([resize_crop(load_img(i+1, img_directory), (img_size, img_size)) for i in range(training_set_size)])
 
@@ -125,7 +128,7 @@ print('training')
 
 import math
 batches = int(float(training_set_size) / batch_size)
-epochs = 1e6
+epochs = 1000000
 
 for epoch in range(epochs):
     print ('epoch %s ' % epoch, end='')
