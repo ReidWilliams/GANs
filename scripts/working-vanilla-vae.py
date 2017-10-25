@@ -98,7 +98,7 @@ import math
 epochs = 10000
 batches = int(float(training_set_size) / batch_size) 
 
-img_idx = 0
+img_idx = 254
 print('training', flush=True)
 for epoch in range(epochs):
     
