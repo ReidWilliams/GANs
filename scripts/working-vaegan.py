@@ -7,6 +7,7 @@ zsize = 128
 
 import sys
 sys.path.append('/home/ec2-user/autoencoder-vaegan')
+sys.stdout.flush()
 
 import numpy as np
 import scipy as sp
