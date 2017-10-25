@@ -98,7 +98,7 @@ disc_z_loss = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(
     logits=disc_z_logits))
 
 # how to weight decoder reconstruction vs fooling discriminator
-gamma = 0.0001
+gamma = 0.001
 # minimize these with optimizer
 disc_loss = disc_vae_loss + disc_x_loss + disc_z_loss
 encoder_loss = latent_loss + similarity_loss
