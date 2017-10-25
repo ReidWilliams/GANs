@@ -130,8 +130,13 @@ decoder_loss_summary = tf.summary.scalar('decoder loss', decoder_loss)
 merged_summary = tf.summary.merge_all()
 
 sess = tf.InteractiveSession()
-# tf.global_variables_initializer().run()
-saver.restore(sess, model_save_directory)
+try:
+    print("trying to restore session at %s" % model_save_directory)
+    saver.restore(sess, model_save_directory)
+except:
+    print("could't restore model, creating new session")
+    tf.global_variables_initializer().run()
+    
 writer = tf.summary.FileWriter(log_directory, sess.graph)
 
 # Train
