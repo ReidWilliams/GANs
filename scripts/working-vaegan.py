@@ -2,7 +2,7 @@ img_directory = '/home/ec2-user/img_align_celeba'
 model_save_path = '/home/ec2-user/vaegan-celeba.ckpt'
 log_path = '/home/ec2-user/tf-log'
 batch_size = 64
-training_set_size = 512
+training_set_size = 2048
 img_size = 64
 zsize = 128
 
@@ -67,7 +67,7 @@ disc_z_logits = disc_z_obj.logits
 print('building losses')
 # Loss functions and optimizers
 
-learning_rate = 0.00001
+learning_rate = 0.0001
 
 # set up loss functions and training_ops
 
@@ -165,7 +165,7 @@ for epoch in range(epochs):
         sess.run(train_decoder, feed_dict={X: xfeed, Z: zfeed})
         print('.', end='', flush=True)
     
-    if (epoch % 4 == 0):
+    if (epoch % 1 == 0):
             # report loss on the first batch
         xfeed = training[:batch_size]
         zfeed = zdraws[:batch_size]
