@@ -27,7 +27,7 @@ decoder = vae.decoder(encoder)
 
 latent_loss = vae.latent_loss()
 xentropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=X, logits=vae.logits)
-reconstruction_loss = tf.reduce_mean(xentropy)
+reconstruction_loss = tf.reduce_sum(xentropy)
 loss = reconstruction_loss + latent_loss
 
 optimizer = tf.train.AdamOptimizer(learning_rate=0.0001)
