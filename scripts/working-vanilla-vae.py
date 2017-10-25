@@ -10,6 +10,7 @@ import scipy as sp
 import os
 from utils import imshow, resize_crop, load_img
 
+print('loading, resizing images', flush=True)
 training = np.array([resize_crop(load_img(i+1, img_directory), (img_size, img_size)) for i in range(training_set_size)])
 
 # Create model and load weights
