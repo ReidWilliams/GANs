@@ -52,7 +52,7 @@ class Autoencoder():
     return sample * sigmas + self.means
 
   def latent_loss(self):
-    return 0.5 * tf.reduce_sum(tf.exp(self.logsigmas) + tf.square(self.means) - 1 - self.logsigmas)
+    return 0.5 * tf.reduce_mean(tf.exp(self.logsigmas) + tf.square(self.means) - 1 - self.logsigmas)
 
   def decoder(self, inputs, scope='decoder', reuse=None):
     with tf.variable_scope(scope, reuse=reuse):
