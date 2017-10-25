@@ -14,8 +14,9 @@ print('loading, resizing images', flush=True)
 training = np.array([resize_crop(load_img(i+1, img_directory), (img_size, img_size)) for i in range(training_set_size)])
 
 # Create model and load weights
-import tensorflow as tf
+print('building model', flush=True)
 
+import tensorflow as tf
 from autoencoder import Autoencoder
 vae = Autoencoder(img_shape=(img_size, img_size, 3))
 
@@ -36,6 +37,7 @@ saver = tf.train.Saver()
 # collect data for tensorboard
 loss_summary = tf.summary.scalar('loss', loss)
 merged_summary = tf.summary.merge_all()
+writer = tf.summary.FileWriter(log_directory, sess.graph)
 
 sess = tf.InteractiveSession()
 try:
@@ -48,6 +50,8 @@ except:
 import math
 epochs = 10000
 batches = int(float(training_set_size) / batch_size) 
+
+print('training', flush=True)
 
 for epoch in range(epochs):
 	print ('epoch %s ' % epoch, end='', flush=True)
