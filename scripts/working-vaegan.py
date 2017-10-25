@@ -1,5 +1,6 @@
 img_directory = '/home/ec2-user/img_align_celeba'
 model_save_path = '/home/ec2-user/vaegan-celeba.ckpt'
+log_path = '/home/ec2-user/tf-log'
 batch_size = 64
 training_set_size = 512
 img_size = 64
@@ -119,6 +120,14 @@ train_disc = tf.train.AdamOptimizer(learning_rate=learning_rate)     .minimize(d
 
 saver = tf.train.Saver()
 
+# create summary nodes
+disc_loss_summary = tf.summary.scalar('disc loss', disc_loss)
+encoder_loss_summary = tf.summary.scalar('encoder loss', encoder_loss)
+decoder_loss_summary = tf.summary.scalar('decoder loss', decoder_loss)
+merged_summary = tf.summary.merge_all()
+writer = tf.summary.FileWriter(log_path, sess.graph)
+
+
 sess = tf.InteractiveSession()
 # tf.global_variables_initializer().run()
 saver.restore(sess, model_save_path)
@@ -158,8 +167,8 @@ for epoch in range(epochs):
     # report loss on the first batch
     xfeed = training[:batch_size]
     zfeed = zdraws[:batch_size]
-    y = disc_loss.eval(feed_dict={X: xfeed, Z: zfeed})        
-    print('\ndiscriminator loss: %s' % y, flush=True)
+    summary = merged_summary.eval(feed_dict={X: xfeed, Z: zfeed})
+    writer.add_summary(summary, epoch)        
         
     if (epoch % 4 == 0):
         print('saving session', flush=True)
