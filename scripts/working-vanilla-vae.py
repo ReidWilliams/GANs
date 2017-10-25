@@ -1,8 +1,9 @@
 img_directory = '/home/ec2-user/img_align_celeba'
 model_save_path = '/home/ec2-user/checkpoints/vae-celeba.ckpt'
 img_save_directory = '/home/ec2-user/vae-celeba-out'
+log_directory = '/home/ec2-user/tf-log/vae-celeba'
 batch_size = 64
-training_set_size = 5000
+training_set_size = 128
 img_size = 128
 
 import numpy as np
