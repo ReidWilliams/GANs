@@ -63,6 +63,7 @@ for epoch in range(epochs):
 	  feed = training[batch*batch_size:(batch+1)*batch_size]
 	  sess.run(loss, feed_dict={X: feed})
 	  print ('.', end='', flush=True)
+	print('', flush=True)
 
 	if (epoch % 10 == 0):
 	  print('saving session', flush=True)
