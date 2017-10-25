@@ -4,7 +4,7 @@ log_directory = '/home/ec2-user/tf-log'
 img_save_directory = '/home/ec2-user/vaegan-celeba-out'
 batch_size = 64
 training_set_size = 1024
-img_size = 64
+img_size = 128
 zsize = 128
 
 import sys
