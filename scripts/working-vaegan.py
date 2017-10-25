@@ -162,13 +162,13 @@ for epoch in range(epochs):
         zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
         sess.run(train_decoder, feed_dict={X: xfeed, Z: zfeed})
         print('.', end='', flush=True)
-
-    # report loss on the first batch
-    xfeed = training[:batch_size]
-    zfeed = zdraws[:batch_size]
-    summary = merged_summary.eval(feed_dict={X: xfeed, Z: zfeed})
-    writer.add_summary(summary, epoch)        
-        
+    
     if (epoch % 4 == 0):
+            # report loss on the first batch
+        xfeed = training[:batch_size]
+        zfeed = zdraws[:batch_size]
+        summary = merged_summary.eval(feed_dict={X: xfeed, Z: zfeed})
+        writer.add_summary(summary, epoch) 
+    
         print('saving session', flush=True)
         saver.save(sess, model_save_path)
