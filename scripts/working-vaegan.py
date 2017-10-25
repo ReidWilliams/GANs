@@ -3,7 +3,7 @@ model_save_directory = '/home/ec2-user/vaegan-celeba.ckpt'
 log_directory = '/home/ec2-user/tf-log'
 img_save_directory = '/home/ec2-user/vaegan-celeba-out'
 batch_size = 64
-training_set_size = 4096
+training_set_size = 2048
 img_size = 128
 zsize = 128
 
@@ -136,7 +136,7 @@ try:
 except:
     print("could't restore model, creating new session")
     tf.global_variables_initializer().run()
-    
+
 writer = tf.summary.FileWriter(log_directory, sess.graph)
 
 # Train
