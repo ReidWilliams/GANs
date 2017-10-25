@@ -1,6 +1,7 @@
 img_directory = '/home/ec2-user/img_align_celeba'
-model_save_path = '/home/ec2-user/vaegan-celeba.ckpt'
-log_path = '/home/ec2-user/tf-log'
+model_save_directory = '/home/ec2-user/vaegan-celeba.ckpt'
+log_directory = '/home/ec2-user/tf-log'
+img_save_directory = '/home/ec2-user/vaegan-celeba-out'
 batch_size = 64
 training_set_size = 2048
 img_size = 64
@@ -130,8 +131,8 @@ merged_summary = tf.summary.merge_all()
 
 sess = tf.InteractiveSession()
 # tf.global_variables_initializer().run()
-saver.restore(sess, model_save_path)
-writer = tf.summary.FileWriter(log_path, sess.graph)
+saver.restore(sess, model_save_directory)
+writer = tf.summary.FileWriter(log_directory, sess.graph)
 
 # Train
 
@@ -172,5 +173,9 @@ for epoch in range(epochs):
         summary = merged_summary.eval(feed_dict={X: xfeed, Z: zfeed})
         writer.add_summary(summary, epoch) 
 
+        example = decoder.eval(feed_dict={X: training[:1]})
+        img_save_path = os.path.join(img_save_directory, '%06d.jpg' % epoch)
+        sp.misc.imsave(img_save_path, example[0])
+
         print('saving session', flush=True)
-        saver.save(sess, model_save_path)
+        saver.save(sess, model_save_directory)
