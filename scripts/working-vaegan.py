@@ -154,8 +154,12 @@ for epoch in range(epochs):
         zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
         sess.run(train_decoder, feed_dict={X: xfeed, Z: zfeed})
         print('.', end='')
-        
-    print('')
+
+    # report loss on the first batch
+    xfeed = training[:batch_size]
+    zfeed = zdraws[:batch_size]
+    y = disc_loss.eval(feed_dict={X: xfeed, Z: zfeed})        
+    print('\ndiscriminator loss: %s' % y)
         
     if (epoch % 4 == 0):
         print('saving session')
