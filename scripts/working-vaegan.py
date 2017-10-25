@@ -97,10 +97,12 @@ disc_z_loss = tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(
     labels=tf.ones_like(disc_z_logits),
     logits=disc_z_logits))
 
+# how to weight decoder reconstruction vs fooling discriminator
+gamma = 0.001
 # minimize these with optimizer
 disc_loss = disc_vae_loss + disc_x_loss + disc_z_loss
 encoder_loss = latent_loss + similarity_loss
-decoder_loss = similarity_loss - disc_loss
+decoder_loss = gamma * similarity_loss - disc_loss
 
 # get weights to train for each of encoder, decoder, etc.
 # pass this to optimizer so it only trains w.r.t the network
@@ -169,6 +171,6 @@ for epoch in range(epochs):
         zfeed = zdraws[:batch_size]
         summary = merged_summary.eval(feed_dict={X: xfeed, Z: zfeed})
         writer.add_summary(summary, epoch) 
-    
+
         print('saving session', flush=True)
         saver.save(sess, model_save_path)
