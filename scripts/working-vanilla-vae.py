@@ -55,6 +55,7 @@ batches = int(float(training_set_size) / batch_size)
 
 print('training', flush=True)
 
+img_idx = 0
 for epoch in range(epochs):
 	print ('epoch %s ' % epoch, end='', flush=True)
 
@@ -72,5 +73,6 @@ for epoch in range(epochs):
 	  writer.add_summary(summary, epoch) 
 
 	  example = decoder.eval(feed_dict={X: training[:1]})
-	  img_save_path = os.path.join(img_save_directory, '%06d.jpg' % epoch)
+	  img_save_path = os.path.join(img_save_directory, '%06d.jpg' % img_idx)
+	  img_idx += 1
 	  sp.misc.imsave(img_save_path, example[0])
