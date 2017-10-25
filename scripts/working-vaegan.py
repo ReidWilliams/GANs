@@ -3,8 +3,8 @@ model_save_directory = '/home/ec2-user/vaegan-celeba.ckpt'
 log_directory = '/home/ec2-user/tf-log'
 img_save_directory = '/home/ec2-user/vaegan-celeba-out'
 batch_size = 64
-training_set_size = 2048
-img_size = 64
+training_set_size = 4096
+img_size = 128
 zsize = 128
 
 import sys
