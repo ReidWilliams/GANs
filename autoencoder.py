@@ -26,15 +26,15 @@ class Autoencoder():
       # but do it separately for each channel. Also note that in the input layer,
       # we call them channels (red, green, blue) but in deeper layers each channel
       # is the output of a convolution filter.
-      t1 = tf.layers.batch_normalization(t0, axis=-1)
+      t1 = tf.layers.batch_normalization(t0, axis=-1, training=True)
       t2 = tf.nn.elu(t1)
 
       t3 = tf.layers.conv2d(t2, filters*2, 5, strides=2)   
-      t4 = tf.layers.batch_normalization(t3, axis=-1)
+      t4 = tf.layers.batch_normalization(t3, axis=-1, training=True)
       t5 = tf.nn.elu(t4)
 
       t6 = tf.layers.conv2d(t5, filters*2, 5, strides=2)   
-      t7 = tf.layers.batch_normalization(t6, axis=-1)
+      t7 = tf.layers.batch_normalization(t6, axis=-1, training=True)
       t8 = tf.nn.elu(t7)
 
       t9 = tf.contrib.layers.flatten(t8)
@@ -74,7 +74,7 @@ class Autoencoder():
 
       t1 = tf.reshape(t0, (tf.shape(t)[0], rows[0], cols[0], filters*8))
       # for 64x64 images, this is 4x4 by 512 filters
-      t2 = tf.layers.batch_normalization(t1, axis=-1)
+      t2 = tf.layers.batch_normalization(t1, axis=-1, training=True)
       t3 = tf.nn.elu(t2)
 
       t4 = tf.layers.conv2d_transpose(t3, filters*4, 5, strides=2)
@@ -89,19 +89,19 @@ class Autoencoder():
       # crop the whole batch
       t5 = t4[:, :rows[1], :cols[1], :]
      
-      t6 = tf.layers.batch_normalization(t5, axis=-1)
+      t6 = tf.layers.batch_normalization(t5, axis=-1, training=True)
       t7 = tf.nn.elu(t6)
 
       t8 = tf.layers.conv2d_transpose(t7, filters*2, 5, strides=2)
       t9 = t8[:, :rows[2], :cols[2], :]
       # for 64x64 images, this is 16x16 by 128 filters
-      t10 = tf.layers.batch_normalization(t9, axis=-1)
+      t10 = tf.layers.batch_normalization(t9, axis=-1, training=True)
       t11 = tf.nn.elu(t10)
 
       t12 = tf.layers.conv2d_transpose(t11, filters, 5, strides=2)
       t13 = t12[:, :rows[3], :cols[3], :]
       # for 64x64 images, this is 32x32 by 64 filters
-      t14 = tf.layers.batch_normalization(t13, axis=-1)
+      t14 = tf.layers.batch_normalization(t13, axis=-1, training=True)
       t15 = tf.nn.elu(t14)
 
       t16 = tf.layers.conv2d_transpose(t15, self.img_shape[2], 5, strides=2)
