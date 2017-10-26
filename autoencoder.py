@@ -72,7 +72,7 @@ class Autoencoder():
       # densely connect z vector to enough units to supply first deconvolution layer.
       # That's rows*cols and at this layer use 8 times the base number of filters.
 
-      t1 = tf.reshape(t0, (tf.shape(t)[0], rows[0], cols[0], filters*8))
+      t1 = tf.reshape(t0, (tf.shape(t0)[0], rows[0], cols[0], filters*8))
       # for 64x64 images, this is 4x4 by 512 filters
       t2 = tf.layers.batch_normalization(t1, axis=-1, training=True)
       t3 = tf.nn.elu(t2)
