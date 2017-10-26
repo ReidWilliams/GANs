@@ -17,15 +17,15 @@ img_size = 64
 
 # for adam optimizer
 learning_rate = 2e-4
-learning_beta1 = 0.5
-# learning_beta1 = 0.9
+# learning_beta1 = 0.5
+learning_beta1 = 0.9
 
 zsize = 128
 
 # weights similarity loss term for decoder loss
 # loss_gamma = 1e-2
 # trying higher gamma
-loss_gamma = 1e-1
+loss_gamma = 10.
 
 
 # In[2]:
