@@ -68,13 +68,13 @@ class Autoencoder():
       # What size should image be as we create larger and larger images with
       # each conv transpose layer.
 
-      t = tf.layers.dense(inputs, rows[0]*cols[0]*filters*8, kernel_initializer=he_init())
+      t = tf.layers.dense(inputs, rows[0]*cols[0]*512, kernel_initializer=he_init())
       # densely connect z vector to enough units to supply first deconvolution layer.
       # That's rows*cols and at this layer use 8 times the base number of filters.
 
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
-      t = tf.reshape(t, (tf.shape(t)[0], rows[0], cols[0], filters*8))
+      t = tf.reshape(t, (tf.shape(t)[0], rows[0], cols[0], 512))
       # for 64x64 images, this is 4x4 by 512 filters
       
       t = tf.layers.conv2d_transpose(t, 256, 5, strides=2)
