@@ -25,7 +25,7 @@ zsize = 128
 # weights similarity loss term for decoder loss
 # loss_gamma = 1e-2
 # trying higher gamma
-loss_gamma = 10.
+loss_gamma = 100.
 
 
 # In[2]:
