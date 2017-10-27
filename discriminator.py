@@ -15,32 +15,23 @@ class Discriminator():
   def disc(self, inputs, training, scope='discriminator', reuse=None):
     with tf.variable_scope(scope, reuse=reuse):
     
-      print('inputs %s' % inputs.get_shape())
       # architecture is similar to autoencoder's encoder. See that for 
       # detailed comments.
       t = tf.layers.conv2d(inputs, 32, 5, strides=2, name='conv2d1')
       # according to paper, no BN after first conv layer
       t = tf.nn.elu(t, name='elu1')
 
-      print('elu1 %s' % t.get_shape())
-
       t = tf.layers.conv2d(t, 128, 5, strides=2, name='conv2d2')
       t = tf.layers.batch_normalization(t, axis=-1, training=training, name='bn1')
       t = tf.nn.elu(t, name='elu2')
-
-      print('elu2 %s' % t.get_shape())
 
       t = tf.layers.conv2d(t, 256, 5, strides=2, name='conv2d3')
       t = tf.layers.batch_normalization(t, axis=-1, training=training, name='bn2')
       t = tf.nn.elu(t, name='elu3')
 
-      print('elu3 %s' % t.get_shape())
-
       t = tf.layers.conv2d(t, 256, 5, strides=2, name='conv2d4')
       t = tf.layers.batch_normalization(t, axis=-1, training=training, name='bn3')
       t = tf.nn.elu(t, name='elu4')
-
-      print('elu4 %s' % t.get_shape())
 
       # use this vector to compare similarity of two images
       self.similarity = tf.contrib.layers.flatten(t)
