@@ -11,21 +11,17 @@ img_directory = '/home/ec2-user/training-data/img_align_celeba'
 model_save_path = '/home/ec2-user/tf-checkpoints/vaegan-celeba/checkpoint.ckpt'
 outputs_directory = '/home/ec2-user/outputs/vaegan-celeba'
 log_directory = '/home/ec2-user/tf-logs/vaegan-celeba'
+
 batch_size = 64
-training_set_size = 5000
+training_set_size = 1024
 img_size = 64
-
-# for adam optimizer
-learning_rate = 2e-4
-# learning_beta1 = 0.5
-learning_beta1 = 0.9
-
+learning_rate = 0.0003
 zsize = 128
 
 # weights similarity loss term for decoder loss
 # loss_gamma = 1e-2
 # trying higher gamma
-loss_gamma = 100.
+loss_gamma = 1e-2
 
 
 # In[2]:
@@ -72,30 +68,36 @@ X = tf.placeholder(tf.float32, [None, img_size, img_size, 3])
 # for feeding random draws of z (latent variable)
 Z = tf.placeholder(tf.float32, [None, zsize])
 
+# flags to pass to networks to set batch normalization layers
+# as trainable or not
+encoder_batch_trainable = tf.placeholder(tf.bool)
+decoder_batch_trainable = tf.placeholder(tf.bool)
+disc_batch_trainable = tf.placeholder(tf.bool)
+
 # encoder, decoder that will be connected to a discriminator
 vae = Autoencoder(img_shape=(img_size, img_size, 3), zsize=zsize)
-encoder = vae.encoder(X)
-decoder = vae.decoder(encoder)
+encoder = vae.encoder(X, encoder_batch_trainable)
+decoder = vae.decoder(encoder, decoder_batch_trainable)
 
 # a second decoder for decoding samplings of z
 decoder_z_obj = Autoencoder(img_shape=(img_size, img_size, 3), zsize=zsize)
-decoder_z = decoder_z_obj.decoder(Z, reuse=True)
+decoder_z = decoder_z_obj.decoder(Z, decoder_batch_trainable, reuse=True)
 
 # discriminator attached to vae output
 disc_vae_obj = Discriminator(img_shape=(img_size, img_size, 3))
-disc_vae_obj.disc(decoder)
+disc_vae_obj.disc(decoder, disc_batch_trainable)
 disc_vae_logits = disc_vae_obj.logits
 
 # discriminator attached to X input
 # shares weights with other discriminator
 disc_x_obj = Discriminator(img_shape=(img_size, img_size, 3))
-disc_x_obj.disc(X, reuse=True)
+disc_x_obj.disc(X, disc_batch_trainable, reuse=True)
 disc_x_logits = disc_x_obj.logits
 
 # discriminator attached to random Zs passed through decoder
 # shares weights with other discriminator
 disc_z_obj = Discriminator(img_shape=(img_size, img_size, 3))
-disc_z_obj.disc(decoder_z, reuse=True)
+disc_z_obj.disc(decoder_z, disc_batch_trainable, reuse=True)
 disc_z_logits = disc_z_obj.logits
 
 
@@ -151,7 +153,7 @@ encoder_update_ops = [i for i in tf.get_collection(tf.GraphKeys.UPDATE_OPS) if '
 decoder_update_ops = [i for i in tf.get_collection(tf.GraphKeys.UPDATE_OPS) if 'decoder' in i.name]
 disc_update_ops = [i for i in tf.get_collection(tf.GraphKeys.UPDATE_OPS) if 'discriminator' in i.name]
 
-optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate, beta1=learning_beta1)
+optimizer = tf.train.RMSPropOptimizer(learning_rate=learning_rate)
     
 with tf.control_dependencies(encoder_update_ops):
     train_encoder = optimizer.minimize(encoder_loss, var_list=encoder_vars)
@@ -213,43 +215,58 @@ merged_summary = tf.summary.merge_all()
 # In[9]:
 
 
-img_idx = 823
+img_idx = 0
 
 
 # # Train
 
-# In[11]:
+# In[10]:
 
 
 import math
 epochs = 10000
 batches = int(float(training_set_size) / batch_size)
-train_discriminator = True
 
 for epoch in range(epochs):
     print ('epoch %s ' % epoch, end='')
     zdraws = np.random.normal(size=(training_set_size, zsize))
     
     # train discriminator
-    if (train_discriminator):
-        for batch in range(batches):
-            xfeed = training[batch*batch_size:(batch+1)*batch_size]
-            zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
-            sess.run(train_disc, feed_dict={X: xfeed, Z: zfeed})
-            print('.', end='')
-         
-    # train encoder
-    for batch in range(batches):
-        xfeed = training[batch*batch_size:(batch+1)*batch_size]
-        sess.run(train_encoder, feed_dict={X: xfeed})
-        print('.', end='')
-        
-    # train decoder
     for batch in range(batches):
         xfeed = training[batch*batch_size:(batch+1)*batch_size]
         zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
-        sess.run(train_decoder, feed_dict={X: xfeed, Z: zfeed})
+        sess.run(train_disc, feed_dict={
+            X: xfeed, 
+            Z: zfeed,
+            encoder_batch_trainable: False,
+            decoder_batch_trainable: False,
+            disc_batch_trainable: True
+        })
         print('.', end='')
+
+#     # train encoder
+#     for batch in range(batches):
+#         xfeed = training[batch*batch_size:(batch+1)*batch_size]
+#         sess.run(train_encoder, feed_dict={
+#             X: xfeed,
+#             encoder_batch_trainable: True,
+#             decoder_batch_trainable: False,
+#             disc_batch_trainable: False
+#             })
+#         print('.', end='')
+        
+#     # train decoder
+#     for batch in range(batches):
+#         xfeed = training[batch*batch_size:(batch+1)*batch_size]
+#         zfeed = zdraws[batch*batch_size:(batch+1)*batch_size]
+#         sess.run(train_decoder, feed_dict={
+#             X: xfeed, 
+#             Z: zfeed,
+#             encoder_batch_trainable: False,
+#             decoder_batch_trainable: True,
+#             disc_batch_trainable: False
+#         })
+#         print('.', end='')
         
     print('')
     
@@ -259,35 +276,22 @@ for epoch in range(epochs):
         
         xfeed = training[:batch_size]
         zfeed = zdraws[:batch_size]
-        summary = merged_summary.eval(feed_dict={X: xfeed, Z: zfeed})
+        summary = merged_summary.eval(feed_dict={
+            X: xfeed, 
+            Z: zfeed,
+            encoder_batch_trainable: False,
+            decoder_batch_trainable: False,
+            disc_batch_trainable: False
+        })
         writer.add_summary(summary, epoch)
-        
-#         disc_vae_out_val = disc_vae_out.eval(feed_dict={X: xfeed})
-#         if (disc_vae_out_val >= 0.5):
-#             train_discriminator = False
-#             print('stopping training of discriminator')
-#         else:
-#             train_discriminator = True
-#             print('starting training of discriminator')
-            
-        example = decoder.eval(feed_dict={X: training[:1]})
+                    
+        example = decoder.eval(feed_dict={
+            X: training[:1],
+            encoder_batch_trainable: False,
+            decoder_batch_trainable: False,
+            disc_batch_trainable: False
+        })
         img_save_path = os.path.join(outputs_directory, '%06d.jpg' % img_idx)
         img_idx += 1
         sp.misc.imsave(img_save_path, example[0])
-
-
-# In[ ]:
-
-
-# vae_out = decoder.eval(feed_dict={X: training[:4]})
-# imshow(training[:4])
-# imshow(vae_out[:4])
-
-
-# In[ ]:
-
-
-# r = np.random.normal(size=(8,128), scale=1.0)
-# y = sess.run(decoder, feed_dict={encoder: r})
-# imshow(y[0:8])
 
