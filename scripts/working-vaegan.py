@@ -213,7 +213,7 @@ merged_summary = tf.summary.merge_all()
 # In[9]:
 
 
-img_idx = 0
+img_idx = 823
 
 
 # # Train
