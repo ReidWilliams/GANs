@@ -1,3 +1,3 @@
-rm ~/tf-checkpoints/vaegan-celeba/*
-rm ~/tf-logs/vaegan-celeba/*
-rm ~/outputs/vaegan-celeba/*
+rm ~/tf-checkpoints/vae-celeba/*
+rm ~/tf-logs/vae-celeba/*
+rm ~/outputs/vae-celeba/*
