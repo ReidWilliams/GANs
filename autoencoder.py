@@ -104,8 +104,7 @@ class Autoencoder():
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d(t, self.img_shape[2], 5, strides=1, padding='same')
-      self.logits = t[:, :self.img_shape[0], :self.img_shape[1], :]
+      self.logits = tf.layers.conv2d(t, self.img_shape[2], 5, strides=1, padding='same')
       # for 64x64 rgb images, this is 64x64 by 3 channels
 
       t = tf.sigmoid(self.logits)
