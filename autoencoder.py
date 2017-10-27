@@ -107,7 +107,7 @@ class Autoencoder():
       self.logits = tf.layers.conv2d(t, self.img_shape[2], 5, strides=1, padding='same')
       # for 64x64 rgb images, this is 64x64 by 3 channels
 
-      t = tf.sigmoid(self.logits)
+      t = tf.tanh(self.logits)
 
     return t
 

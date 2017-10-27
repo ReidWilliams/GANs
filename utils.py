@@ -57,8 +57,10 @@ def resize_crop(img, desired_dims):
 
 # rescale pixel values linearly from [0,1] to [-1,1]
 # This is supposedto help converging on GANs
-def rescale_pixels(images):
+def pixels_11(images):
     return 2*images - 1
 
+def pixels_01(images):
+    return 0.5*(images + 1)
 
 
