@@ -17,7 +17,7 @@ class Discriminator():
     
       # architecture is similar to autoencoder's encoder. See that for 
       # detailed comments.
-      t = tf.layers.conv2d(inputs, 32, 5, strides=1, name='conv2d1')
+      t = tf.layers.conv2d(inputs, 32, 5, strides=2, name='conv2d1')
       # according to paper, no BN after first conv layer
       t = tf.nn.elu(t, name='elu1')
 
