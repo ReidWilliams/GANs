@@ -6,23 +6,6 @@ import numpy as np
 import os
 import math
 
-def interleave(a, b, c):
-    ''' Returns data set with a[0], b[0], c[0],
-    a[1], b[1], c[1], etc. Used for interleaving real, 
-    encoded/decoded, generated images to feed to 
-    discriminator for training. Intuition is that batches
-    should be composed of a mix of all three types.'''
-    data_shape = a.shape
-    
-    collected = [np.expand_dims(x, 1) for x in (a, b, c)]
-    catted = np.concatenate(collected, axis=1)
-
-    # new shape is 1 by number of data points by dims of data itself
-    new_shape = (1, 3*data_shape[0]) + data_shape[1:]
-    reshaped = np.reshape(catted, new_shape)
-
-    # remove the 0th axis because it only has one item
-    return np.squeeze(reshaped, axis=0)
 
 def imshow(imgs, cols=4):
     fig = plt.figure(figsize=(15,8))
@@ -71,3 +54,11 @@ def resize_crop(img, desired_dims):
     img_final = resize(img_cropped, desired_dims)
     
     return img_final
+
+# rescale pixel values linearly from [0,1] to [-1,1]
+# This is supposedto help converging on GANs
+def rescale_pixels(images):
+    return 2*images - 1
+
+
+
