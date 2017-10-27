@@ -16,10 +16,8 @@ class Autoencoder():
     (None, rows, cols, channels) '''
      
     with tf.variable_scope(scope, reuse=reuse):
-      # Base number of 2D convolution filters. 64 is from paper.
-      filters = 64
       # 64 filters of 5x5 field with stride 2
-      t = tf.layers.conv2d(inputs, filters, 5, strides=2)
+      t = tf.layers.conv2d(inputs, 64, 5, strides=2)
 
       # Batch normalize per channel (per the paper) and channels are last dim.
       # This means find average accross the batch and apply it to the inputs, 
@@ -29,16 +27,19 @@ class Autoencoder():
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d(t, filters*2, 5, strides=2)   
+      t = tf.layers.conv2d(t, 128, 5, strides=2)   
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d(t, filters*2, 5, strides=2)   
+      t = tf.layers.conv2d(t, 256, 5, strides=2)   
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
       t = tf.contrib.layers.flatten(t)
-       
+      t = tf.layers.dense(t, 512, kernel_initializer=he_init())
+      t = tf.layers.batch_normalization(t, axis=-1, training=training)
+      t = tf.nn.elu(t)
+
       # In a variational autoencoder, the encoder outputs a mean and sigma vector
       # from which samples are drawn. In practice, treat the second output as
       # log(sigma**2), but we'll call it logsigma. Each of mean and logsigma are
@@ -58,7 +59,6 @@ class Autoencoder():
 
   def decoder(self, inputs, training, scope='decoder', reuse=None):
     with tf.variable_scope(scope, reuse=reuse):
-      filters = 64
       # deconvolution mirrors convolution, start with many filters, then
       # shrink down to a base level of filters. This is lowest number of filters
       # before wiring to 3 channel image (rgb).
@@ -72,12 +72,12 @@ class Autoencoder():
       # densely connect z vector to enough units to supply first deconvolution layer.
       # That's rows*cols and at this layer use 8 times the base number of filters.
 
-      t = tf.reshape(t, (tf.shape(t)[0], rows[0], cols[0], filters*8))
-      # for 64x64 images, this is 4x4 by 512 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
-
-      t = tf.layers.conv2d_transpose(t, filters*4, 5, strides=2)
+      t = tf.reshape(t, (tf.shape(t)[0], rows[0], cols[0], filters*8))
+      # for 64x64 images, this is 4x4 by 512 filters
+      
+      t = tf.layers.conv2d_transpose(t, 256, 5, strides=2)
 
       # Because of the way the kernel slides accross
       # the input, and b/c we're using stride 2, output is double the input
@@ -92,19 +92,19 @@ class Autoencoder():
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d_transpose(t, filters*2, 5, strides=2)
+      t = tf.layers.conv2d_transpose(t, 128, 5, strides=2)
       t = t[:, :rows[2], :cols[2], :]
       # for 64x64 images, this is 16x16 by 128 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d_transpose(t, filters, 5, strides=2)
+      t = tf.layers.conv2d_transpose(t, 32, 5, strides=2)
       t = t[:, :rows[3], :cols[3], :]
       # for 64x64 images, this is 32x32 by 64 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d_transpose(t, self.img_shape[2], 5, strides=2)
+      t = tf.layers.conv2d(t, self.img_shape[2], 5, strides=1)
       self.logits = t[:, :self.img_shape[0], :self.img_shape[1], :]
       # for 64x64 rgb images, this is 64x64 by 3 channels
 
