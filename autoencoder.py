@@ -63,8 +63,8 @@ class Autoencoder():
       # shrink down to a base level of filters. This is lowest number of filters
       # before wiring to 3 channel image (rgb).
 
-      rows = [int(np.ceil(self.img_shape[0] / i)) for i in [16., 8., 4., 2.]]
-      cols = [int(np.ceil(self.img_shape[1] / i)) for i in [16., 8., 4., 2.]]
+      rows = [int(np.ceil(self.img_shape[0] / i)) for i in [8., 4., 2., 1.]]
+      cols = [int(np.ceil(self.img_shape[1] / i)) for i in [8., 4., 2., 1.]]
       # What size should image be as we create larger and larger images with
       # each conv transpose layer.
 
