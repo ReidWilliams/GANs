@@ -98,17 +98,23 @@ class Autoencoder():
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
+      print('101: %s' % t.get_shape())
+
       t = tf.layers.conv2d_transpose(t, 32, 5, strides=2)
       t = t[:, :rows[3], :cols[3], :]
       # for 64x64 images, this is 32x32 by 64 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
+      print('107: %s' % t.get_shape())
+
       t = tf.layers.conv2d(t, self.img_shape[2], 5, strides=1)
       self.logits = t[:, :self.img_shape[0], :self.img_shape[1], :]
       # for 64x64 rgb images, this is 64x64 by 3 channels
 
       t = tf.sigmoid(self.logits)
+
+      print('sigmoid %s' % t.get_shape())
 
     return t
 
