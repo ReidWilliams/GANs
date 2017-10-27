@@ -77,7 +77,7 @@ class Autoencoder():
       t = tf.reshape(t, (tf.shape(t)[0], rows[0], cols[0], 512))
       # for 64x64 images, this is 4x4 by 512 filters
       
-      t = tf.layers.conv2d_transpose(t, 256, 5, strides=2)
+      t = tf.layers.conv2d_transpose(t, 256, 5, strides=2, padding='same')
 
       # Because of the way the kernel slides accross
       # the input, and b/c we're using stride 2, output is double the input
@@ -87,19 +87,19 @@ class Autoencoder():
       # we get output of 11x11, but want 8x8. Crop off bottom and right of image.
 
       # crop the whole batch
-      t = t[:, :rows[1], :cols[1], :]
+      # t = t[:, :rows[1], :cols[1], :]
      
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d_transpose(t, 128, 5, strides=2)
-      t = t[:, :rows[2], :cols[2], :]
+      t = tf.layers.conv2d_transpose(t, 128, 5, strides=2, padding='same')
+      #t = t[:, :rows[2], :cols[2], :]
       # for 64x64 images, this is 16x16 by 128 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d_transpose(t, 32, 5, strides=2)
-      t = t[:, :rows[3], :cols[3], :]
+      t = tf.layers.conv2d_transpose(t, 32, 5, strides=2, padding='same')
+      #t = t[:, :rows[3], :cols[3], :]
       # for 64x64 images, this is 32x32 by 64 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
