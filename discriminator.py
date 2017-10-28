@@ -36,7 +36,9 @@ class Discriminator():
       t = tf.layers.batch_normalization(t, axis=-1, training=training, name='bn3')
       t = tf.nn.elu(t, name='elu4')
 
-      t = tf.layers.dense(self.similarity, 512, name='dense1')
+      t = tf.contrib.layers.flatten(t)
+
+      t = tf.layers.dense(t, 512, name='dense1')
       t = tf.layers.batch_normalization(t, axis=-1, training=training, name='bn4')
       t = tf.nn.elu(t, name='elu5')
 
