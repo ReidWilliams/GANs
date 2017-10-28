@@ -25,9 +25,6 @@ class Discriminator():
       t = tf.layers.batch_normalization(t, axis=-1, training=training, name='bn1')
       t = tf.nn.elu(t, name='elu2')
 
-      # use this vector to compare similarity of two images
-      self.similarity = tf.contrib.layers.flatten(t)
-
       t = tf.layers.conv2d(t, 256, 5, strides=2, name='conv2d3')
       t = tf.layers.batch_normalization(t, axis=-1, training=training, name='bn2')
       t = tf.nn.elu(t, name='elu3')
@@ -35,6 +32,9 @@ class Discriminator():
       t = tf.layers.conv2d(t, 256, 5, strides=2, name='conv2d4')
       t = tf.layers.batch_normalization(t, axis=-1, training=training, name='bn3')
       t = tf.nn.elu(t, name='elu4')
+    
+      # use this vector to compare similarity of two images
+      self.similarity = tf.contrib.layers.flatten(t)
 
       t = tf.contrib.layers.flatten(t)
 
