@@ -63,21 +63,16 @@ class Autoencoder():
       # shrink down to a base level of filters. This is lowest number of filters
       # before wiring to 3 channel image (rgb).
 
-      rows = [int(np.ceil(self.img_shape[0] / i)) for i in [8., 4., 2., 1.]]
-      cols = [int(np.ceil(self.img_shape[1] / i)) for i in [8., 4., 2., 1.]]
-      # What size should image be as we create larger and larger images with
-      # each conv transpose layer.
-
-      t = tf.layers.dense(inputs, rows[0]*cols[0]*512, kernel_initializer=he_init())
+      t = tf.layers.dense(inputs, 4*4*1024, kernel_initializer=he_init())
       # densely connect z vector to enough units to supply first deconvolution layer.
       # That's rows*cols and at this layer use 8 times the base number of filters.
 
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
-      t = tf.reshape(t, (tf.shape(t)[0], rows[0], cols[0], 512))
+      t = tf.reshape(t, (tf.shape(t)[0], 4, 4, 1024))
       # for 64x64 images, this is 4x4 by 512 filters
       
-      t = tf.layers.conv2d_transpose(t, 256, 5, strides=2, padding='same')
+      t = tf.layers.conv2d_transpose(t, 512, 5, strides=2, padding='same')
 
       # Because of the way the kernel slides accross
       # the input, and b/c we're using stride 2, output is double the input
@@ -92,19 +87,19 @@ class Autoencoder():
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d_transpose(t, 128, 5, strides=2, padding='same')
+      t = tf.layers.conv2d_transpose(t, 256, 5, strides=2, padding='same')
       #t = t[:, :rows[2], :cols[2], :]
       # for 64x64 images, this is 16x16 by 128 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d_transpose(t, 32, 5, strides=2, padding='same')
+      t = tf.layers.conv2d_transpose(t, 128, 5, strides=2, padding='same')
       #t = t[:, :rows[3], :cols[3], :]
       # for 64x64 images, this is 32x32 by 64 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      self.logits = tf.layers.conv2d(t, self.img_shape[2], 5, strides=1, padding='same')
+      self.logits = tf.layers.conv2d(t, self.img_shape[2], 5, strides=2, padding='same')
       # for 64x64 rgb images, this is 64x64 by 3 channels
 
       t = tf.tanh(self.logits)
