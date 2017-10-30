@@ -96,10 +96,12 @@ class Autoencoder():
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
+      print('99: %s' % t.get_shape())
+
       self.logits = tf.layers.conv2d(t, self.img_shape[2], 5, strides=2, padding='same')
       # for 64x64 rgb images, this is 64x64 by 3 channels
 
-      print('105: %s' % self.logits.get_shape())
+      print('104: %s' % self.logits.get_shape())
 
       t = tf.tanh(self.logits)
 
