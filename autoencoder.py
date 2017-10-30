@@ -70,19 +70,6 @@ class Autoencoder():
       t = tf.nn.elu(t)
       
       t = tf.layers.conv2d_transpose(t, 512, 5, strides=2, padding='same')
-
-      # Because of the way the kernel slides accross
-      # the input, and b/c we're using stride 2, output is double the input
-      # rows/cols plus a few more due to width of kernel. Just crop out extras
-      # before moving on.
-      # e.g. for input image of size 4x4, with 5x5 kernel and stride of 2, 
-      # we get output of 11x11, but want 8x8. Crop off bottom and right of image.
-
-      # crop the whole batch
-      # t = t[:, :rows[1], :cols[1], :]
-
-      print('84: %s' % t.get_shape())
-     
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
@@ -90,18 +77,12 @@ class Autoencoder():
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      print('93: %s' % t.get_shape())
-
       t = tf.layers.conv2d_transpose(t, 128, 5, strides=2, padding='same')
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
-      print('99: %s' % t.get_shape())
-
       self.logits = tf.layers.conv2d_transpose(t, self.img_shape[2], 5, strides=2, padding='same')
       # for 64x64 rgb images, this is 64x64 by 3 channels
-
-      print('104: %s' % self.logits.get_shape())
 
       t = tf.tanh(self.logits)
 
