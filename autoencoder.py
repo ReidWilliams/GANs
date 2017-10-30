@@ -81,20 +81,18 @@ class Autoencoder():
       # crop the whole batch
       # t = t[:, :rows[1], :cols[1], :]
 
-      print('87: %s' % t.get_shape())
+      print('84: %s' % t.get_shape())
      
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
       t = tf.layers.conv2d_transpose(t, 256, 5, strides=2, padding='same')
-      #t = t[:, :rows[2], :cols[2], :]
-      # for 64x64 images, this is 16x16 by 128 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
+      print('93: %s' % t.get_shape())
+
       t = tf.layers.conv2d_transpose(t, 128, 5, strides=2, padding='same')
-      #t = t[:, :rows[3], :cols[3], :]
-      # for 64x64 images, this is 32x32 by 64 filters
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
 
