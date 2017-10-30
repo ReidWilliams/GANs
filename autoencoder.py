@@ -84,7 +84,7 @@ class Autoencoder():
       # crop the whole batch
       # t = t[:, :rows[1], :cols[1], :]
 
-      print('87: %s' % self.logits.get_shape())
+      print('87: %s' % t.get_shape())
      
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
