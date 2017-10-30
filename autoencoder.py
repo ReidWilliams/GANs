@@ -64,13 +64,10 @@ class Autoencoder():
       # before wiring to 3 channel image (rgb).
 
       t = tf.layers.dense(inputs, 4*4*1024, kernel_initializer=he_init())
-      # densely connect z vector to enough units to supply first deconvolution layer.
-      # That's rows*cols and at this layer use 8 times the base number of filters.
-
+        
+      t = tf.reshape(t, (tf.shape(t)[0], 4, 4, 1024))
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
-      t = tf.reshape(t, (tf.shape(t)[0], 4, 4, 1024))
-      # for 64x64 images, this is 4x4 by 512 filters
       
       t = tf.layers.conv2d_transpose(t, 512, 5, strides=2, padding='same')
 
