@@ -19,15 +19,15 @@ class Discriminator():
       t = tf.nn.elu(t, name='elu1')
 
       t = tf.layers.conv2d(t, 128, 5, strides=2, name='conv2d2')
-      t = tf.contrib.layers.batch_norm(t, training=training, name='bn1')
+      t = tf.contrib.layers.batch_norm(t, is_training=training, name='bn1')
       t = tf.nn.elu(t, name='elu2')
 
       t = tf.layers.conv2d(t, 256, 5, strides=2, name='conv2d3')
-      t = tf.contrib.layers.batch_norm(t, training=training, name='bn2')
+      t = tf.contrib.layers.batch_norm(t, is_training=training, name='bn2')
       t = tf.nn.elu(t, name='elu3')
 
       t = tf.layers.conv2d(t, 512, 5, strides=2, name='conv2d4')
-      t = tf.contrib.layers.batch_norm(t, training=training, name='bn3')
+      t = tf.contrib.layers.batch_norm(t, is_training=training, name='bn3')
       t = tf.nn.elu(t, name='elu4')
     
       # use this vector to compare similarity of two images
