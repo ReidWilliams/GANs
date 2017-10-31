@@ -57,15 +57,15 @@ class Autoencoder():
       loss = 0.5 * tf.reduce_mean(tf.exp(self.logsigmas) + tf.square(self.means) - 1 - self.logsigmas)
     return loss
 
-  def decoder(self, inputs, training, scope='decoder', reuse=None):
+  def generator(self, inputs, training, scope='generator', reuse=None):
     with tf.variable_scope(scope, reuse=reuse):
       # deconvolution mirrors convolution, start with many filters, then
       # shrink down to a base level of filters. This is lowest number of filters
       # before wiring to 3 channel image (rgb).
 
-      t = tf.layers.dense(inputs, 4*4*1024, kernel_initializer=he_init())
+      t = tf.layers.dense(inputs, 4*4*512, kernel_initializer=he_init())
         
-      t = tf.reshape(t, (tf.shape(t)[0], 4, 4, 1024))
+      t = tf.reshape(t, (tf.shape(t)[0], 4, 4, 512))
       t = tf.layers.batch_normalization(t, axis=-1, training=training)
       t = tf.nn.elu(t)
       

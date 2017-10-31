@@ -12,7 +12,7 @@ class Discriminator():
     # Input image shape: x, y, channels
     self.img_shape = img_shape
 
-  def disc(self, inputs, training, scope='discriminator', reuse=None):
+  def discriminator(self, inputs, training, scope='discriminator', reuse=None):
     with tf.variable_scope(scope, reuse=reuse):
     
       t = tf.layers.conv2d(inputs, 64, 5, strides=2, name='conv2d1')
@@ -38,7 +38,7 @@ class Discriminator():
       # output classification: probability an image is fake
       self.logits = tf.layers.dense(t, 1, name='dense')
       classification = tf.sigmoid(self.logits, name='sigmoid')
-    return classification
+    return classification, self.logits
 
 
 
