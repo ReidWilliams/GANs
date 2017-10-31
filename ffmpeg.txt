@@ -7,4 +7,4 @@ ffmpeg -i ../colbert.mp4 -vf fps=10 out%d.png
 # fetch with rsync and force build movie
 rsync -e "ssh -i /Users/rwilliams/.ssh/amazon-reidw-oct-2017.pem" -z ec2-user@34.232.69.21:/home/ec2-user/outputs/vaegan-celeba/* ./; ffmpeg -y -r 10 -f image2 -s 64x64 -i %06d.jpg -vcodec libx264 -crf 15  -pix_fmt yuv420p ../vaegan.mp4
 
-while true; do rsync -e "ssh -i /Users/rwilliams/.ssh/amazon-reidw-oct-2017.pem" -z ec2-user@54.87.172.139:/home/ec2-user/outputs/vaegan-celeba/* ./; ffmpeg -y -r 10 -f image2 -s 64x64 -i %06d.jpg -vcodec libx264 -crf 15  -pix_fmt yuv420p ./vae.mp4; sleep 5; done
+while true; do rsync -e "ssh -i /Users/rwilliams/.ssh/amazon-reidw-oct-2017.pem" -z ec2-user@54.89.194.76:/home/ec2-user/outputs/vaegan-celeba/* ./; ffmpeg -y -r 10 -f image2 -s 64x64 -i %06d.jpg -vcodec libx264 -crf 15  -pix_fmt yuv420p ./vae.mp4; sleep 5; done

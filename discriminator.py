@@ -1,6 +1,8 @@
 import tensorflow as tf
 import numpy as np
 
+from ops import *
+
 he_init = tf.contrib.layers.variance_scaling_initializer
 
 class Discriminator():
@@ -11,34 +13,19 @@ class Discriminator():
   def __init__(self, img_shape=(64, 64, 3)):
     # Input image shape: x, y, channels
     self.img_shape = img_shape
+    self.d_bns = [
+      batch_norm(name='d_bn{}'.format(i,)) for i in range(4)]
 
-  def disc(self, inputs, training, scope='discriminator', reuse=None):
+  def discriminator(self, inputs, training, scope='discriminator', reuse=None):
     with tf.variable_scope(scope, reuse=reuse):
     
-      t = tf.layers.conv2d(inputs, 64, 5, strides=2, name='conv2d1')
-      t = tf.nn.elu(t, name='elu1')
-
-      t = tf.layers.conv2d(t, 128, 5, strides=2, name='conv2d2')
-      t = tf.contrib.layers.batch_norm(t, is_training=training)
-      t = tf.nn.elu(t, name='elu2')
-
-      t = tf.layers.conv2d(t, 256, 5, strides=2, name='conv2d3')
-      t = tf.contrib.layers.batch_norm(t, is_training=training)
-      t = tf.nn.elu(t, name='elu3')
-
-      t = tf.layers.conv2d(t, 512, 5, strides=2, name='conv2d4')
-      t = tf.contrib.layers.batch_norm(t, is_training=training)
-      t = tf.nn.elu(t, name='elu4')
-    
-      # use this vector to compare similarity of two images
-      # self.similarity = tf.contrib.layers.flatten(t)
-
-      t = tf.contrib.layers.flatten(t)
-
-      # output classification: probability an image is fake
-      self.logits = tf.layers.dense(t, 1, name='dense')
-      classification = tf.sigmoid(self.logits, name='sigmoid')
-    return classification
+      h0 = lrelu(conv2d(inputs, 64, name='d_h0_conv'))
+      h1 = lrelu(self.d_bns[0](conv2d(h0, 128, name='d_h1_conv'), training))
+      h2 = lrelu(self.d_bns[1](conv2d(h1, 256, name='d_h2_conv'), training))
+      h3 = lrelu(self.d_bns[2](conv2d(h2, 512, name='d_h3_conv'), training))
+      h4 = linear(tf.reshape(h3, [-1, 8192]), 1, 'd_h4_lin')
+      
+      return tf.nn.sigmoid(h4), h4
 
 
 

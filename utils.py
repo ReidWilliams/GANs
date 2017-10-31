@@ -20,7 +20,8 @@ def imshow(imgs, cols=4):
 def load_img(id, img_directory):
     filename = '%06d.jpg' % id
     path = os.path.join(img_directory, filename)
-    return sp.ndimage.imread(path)
+    # return sp.ndimage.imread(path)
+    return sp.misc.imread(path, mode='RGB').astype(np.float)
 
 # resize smaller, cropping if necessary
 def resize_crop(img, desired_dims):
@@ -58,9 +59,11 @@ def resize_crop(img, desired_dims):
 # rescale pixel values linearly from [0,1] to [-1,1]
 # This is supposedto help converging on GANs
 def pixels11(images):
-    return 2*images - 1
+    # return 2*images - 1
+    return np.array(images)/127.5 - 1.
 
 def pixels01(images):
-    return 0.5*(images + 1)
+    # return 0.5*(images + 1)
+    return (images+1.)/2.
 
 

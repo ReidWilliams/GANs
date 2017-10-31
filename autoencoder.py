@@ -1,6 +1,8 @@
 import tensorflow as tf
 import numpy as np
 
+from ops import *
+
 he_init = tf.contrib.layers.variance_scaling_initializer
 
 class Autoencoder():
@@ -10,83 +12,42 @@ class Autoencoder():
     self.img_shape = img_shape
     # latent (z) vector length
     self.zsize = zsize
+    self.g_bns = [
+      batch_norm(name='g_bn{}'.format(i,)) for i in range(6)]
 
-  def encoder(self, inputs, training, scope='encoder', reuse=None):
-    ''' Returns encoder graph. Inputs is a placeholder of size
-    (None, rows, cols, channels) '''
-     
+  def generator(self, inputs, training, scope='generator', reuse=None):
     with tf.variable_scope(scope, reuse=reuse):
-      # 64 filters of 5x5 field with stride 2
-      t = tf.layers.conv2d(inputs, 64, 5, strides=2)
-
-      # Batch normalize per channel (per the paper) and channels are last dim.
-      # This means find average accross the batch and apply it to the inputs, 
-      # but do it separately for each channel. Also note that in the input layer,
-      # we call them channels (red, green, blue) but in deeper layers each channel
-      # is the output of a convolution filter.
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
-      t = tf.nn.elu(t)
-
-      t = tf.layers.conv2d(t, 128, 5, strides=2)   
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
-      t = tf.nn.elu(t)
-
-      t = tf.layers.conv2d(t, 256, 5, strides=2)   
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
-      t = tf.nn.elu(t)
-
-      t = tf.contrib.layers.flatten(t)
-      t = tf.layers.dense(t, 512, kernel_initializer=he_init())
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
-      t = tf.nn.elu(t)
-
-      # In a variational autoencoder, the encoder outputs a mean and sigma vector
-      # from which samples are drawn. In practice, treat the second output as
-      # log(sigma**2), but we'll call it logsigma. Each of mean and logsigma are
-      # zsize vectors, but here we pack them into a single zsize*2 vector.
-      self.means = tf.layers.dense(t, self.zsize, activation=tf.nn.elu, kernel_initializer=he_init())
-      self.logsigmas = tf.layers.dense(t, self.zsize, activation=tf.nn.elu, kernel_initializer=he_init())
-      # keep means and logsigma for computing variational loss
-      sigmas = tf.exp(0.5 * self.logsigmas) # see Hands on machine learning, Geron, p. 435
-
-      sample = tf.random_normal(tf.shape(sigmas), dtype=tf.float32)
-    return sample * sigmas + self.means
-
-  def latent_loss(self):
-    with tf.variable_scope('latent_loss'):
-      loss = 0.5 * tf.reduce_mean(tf.exp(self.logsigmas) + tf.square(self.means) - 1 - self.logsigmas)
-    return loss
-
-  def decoder(self, inputs, training, scope='decoder', reuse=None):
-    with tf.variable_scope(scope, reuse=reuse):
-      # deconvolution mirrors convolution, start with many filters, then
-      # shrink down to a base level of filters. This is lowest number of filters
-      # before wiring to 3 channel image (rgb).
-
-      t = tf.layers.dense(inputs, 4*4*1024, kernel_initializer=he_init())
-        
-      t = tf.reshape(t, (tf.shape(t)[0], 4, 4, 1024))
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
-      t = tf.nn.elu(t)
       
-      t = tf.layers.conv2d_transpose(t, 512, 5, strides=2, padding='same')
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
-      t = tf.nn.elu(t)
+      # self.gf_dim = 64
 
-      t = tf.layers.conv2d_transpose(t, 256, 5, strides=2, padding='same')
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
-      t = tf.nn.elu(t)
+      self.z_, self.h0_w, self.h0_b = linear(inputs, 8192, 'g_h0_lin', with_w=True)
+      # self.z_ = tf.layers.dense(inputs, 8192, kernel_initializer=he_init())
+      
+      hs = [None]
+      hs[0] = tf.reshape(self.z_, [-1, 4, 4, 512])
+      hs[0] = tf.nn.relu(self.g_bns[0](hs[0], training))
 
-      t = tf.layers.conv2d_transpose(t, 128, 5, strides=2, padding='same')
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
-      t = tf.nn.elu(t)
+      i = 1 # Iteration number.
+      depth_mul = 8  # Depth decreases as spatial component increases.
+      size = 8  # Size increases as depth decreases.
 
-      self.logits = tf.layers.conv2d_transpose(t, self.img_shape[2], 5, strides=2, padding='same')
-      # for 64x64 rgb images, this is 64x64 by 3 channels
+      while size < 64:
+        hs.append(None)
+        name = 'g_h{}'.format(i)
+        hs[i], _, _ = conv2d_transpose(hs[i-1],
+            [64, size, size, 64*depth_mul], name=name, with_w=True)
+        hs[i] = tf.nn.relu(self.g_bns[i](hs[i], training))
 
-      t = tf.tanh(self.logits)
+        i += 1
+        depth_mul //= 2
+        size *= 2
 
-    return t
+      hs.append(None)
+      name = 'g_h{}'.format(i)
+      hs[i], _, _ = conv2d_transpose(hs[i - 1],
+          [64, size, size, 3], name=name, with_w=True)
+      
+      return tf.nn.tanh(hs[i])
 
 
 
