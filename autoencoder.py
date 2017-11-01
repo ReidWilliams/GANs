@@ -17,27 +17,27 @@ class Autoencoder():
      
     with tf.variable_scope(scope, reuse=reuse):
       # 64 filters of 5x5 field with stride 2
-      t = tf.layers.conv2d(inputs, 64, 5, strides=2)
+      t = tf.layers.conv2d(inputs, 64, 5, strides=2, padding='same')
 
       # Batch normalize per channel (per the paper) and channels are last dim.
       # This means find average accross the batch and apply it to the inputs, 
       # but do it separately for each channel. Also note that in the input layer,
       # we call them channels (red, green, blue) but in deeper layers each channel
       # is the output of a convolution filter.
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
+      t = tf.contrib.layers.batch_norm(t, updates_collections=None, is_training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d(t, 128, 5, strides=2)   
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
+      t = tf.layers.conv2d(t, 128, 5, strides=2, padding='same')   
+      t = tf.contrib.layers.batch_norm(t, updates_collections=None, is_training=training)
       t = tf.nn.elu(t)
 
-      t = tf.layers.conv2d(t, 256, 5, strides=2)   
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
+      t = tf.layers.conv2d(t, 256, 5, strides=2, padding='same')   
+      t = tf.contrib.layers.batch_norm(t, updates_collections=None, is_training=training)
       t = tf.nn.elu(t)
 
       t = tf.contrib.layers.flatten(t)
       t = tf.layers.dense(t, 512, kernel_initializer=he_init())
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
+      t = tf.contrib.layers.batch_norm(t, updates_collections=None, is_training=training)
       t = tf.nn.elu(t)
 
       # In a variational autoencoder, the encoder outputs a mean and sigma vector
@@ -63,22 +63,25 @@ class Autoencoder():
       # shrink down to a base level of filters. This is lowest number of filters
       # before wiring to 3 channel image (rgb).
 
-      t = tf.layers.dense(inputs, 4*4*512, kernel_initializer=he_init())
+      # number of pixels on each side for starting image
+      _len = int(self.img_shape[0] / 16)
+
+      t = tf.layers.dense(inputs, _len*_len*512, kernel_initializer=he_init())
         
-      t = tf.reshape(t, (tf.shape(t)[0], 4, 4, 512))
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
+      t = tf.reshape(t, (tf.shape(t)[0], _len, _len, 512))
+      t = tf.contrib.layers.batch_norm(t, updates_collections=None, is_training=training)
       t = tf.nn.elu(t)
       
       t = tf.layers.conv2d_transpose(t, 512, 5, strides=2, padding='same')
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
+      t = tf.contrib.layers.batch_norm(t, updates_collections=None, is_training=training)
       t = tf.nn.elu(t)
 
       t = tf.layers.conv2d_transpose(t, 256, 5, strides=2, padding='same')
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
+      t = tf.contrib.layers.batch_norm(t, updates_collections=None, is_training=training)
       t = tf.nn.elu(t)
 
       t = tf.layers.conv2d_transpose(t, 128, 5, strides=2, padding='same')
-      t = tf.layers.batch_normalization(t, axis=-1, training=training)
+      t = tf.contrib.layers.batch_norm(t, updates_collections=None, is_training=training)
       t = tf.nn.elu(t)
 
       self.logits = tf.layers.conv2d_transpose(t, self.img_shape[2], 5, strides=2, padding='same')
