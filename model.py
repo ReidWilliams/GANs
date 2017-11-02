@@ -2,6 +2,7 @@ import os
 
 from feed import Feed
 from architecture import VAEGAN
+from utils import pixels01, pixels11
 
 def printnow(x, end='\n'): print(x, flush=True, end=end)
 
@@ -170,7 +171,8 @@ class Model:
 
         for epoch in range(epochs):            
             for batch in range(batches):
-                xfeed, zfeed = self.feed.feed(batch)
+                xfeed = pixels11(self.feed.feed(batch)) # conver to [-1, 1]
+                zfeed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
 
                 # train discriminator
                 _, summary = self.sess.run(

@@ -3,13 +3,10 @@ import scipy as sp
 import os
 import sys
 
-from utils import pixels11
-
 class Feed:
 	'''Feed image data to training process. '''
-	def __init__(self, data_directory, zsize, batch_size, ncached_batches=100):
+	def __init__(self, data_directory, batch_size, ncached_batches=100):
 		self.data_directory = data_directory
-		self.zsize = zsize
 		self.batch_size = batch_size
 		# number of batches to preload into memory
 		self.ncached_batches = ncached_batches
@@ -32,17 +29,17 @@ class Feed:
 			self.cached_batch_start = self.ncached_batches * \
 				int(batch_idx / float(self.ncached_batches))
 			# preload more batches
-			print('cached b start: %s' % self.cached_batch_start)
 			self.load_cache(self.cached_batch_start)
 
 		# index of batch in currently preloaded data
 		return batch_idx % self.ncached_batches
 
+	def nbatches(self):
+		return int(len(self.filenames) / float(self.batch_size))
+
 	def load_cache(self, batch_idx):
-		# last valid index given dataset size
-		last_batch_idx = int(len(self.filenames) / float(self.batch_size))
 		# end of cache
-		end_batch_idx = min((batch_idx + self.ncached_batches), last_batch_idx)
+		end_batch_idx = min((batch_idx + self.ncached_batches), self.nbatches())
 
 		start = batch_idx * self.batch_size
 		end = end_batch_idx * self.batch_size
@@ -56,22 +53,16 @@ class Feed:
 	def feed(self, batch_idx):
 		''' Returns images and noise. User needs to ensure that batch_idx + batch_size doesn't exceed
 		last image. I.e. restrict batch idx to integer multiple of total images.'''
-		cidx = self.cidx(batch_idx)
-
-		print('batch index: %s' % cidx)
-		
+		cidx = self.cidx(batch_idx)	
 		imgs = self.imgs[ cidx*self.batch_size:(cidx+1)*self.batch_size ]
-		noise = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
 
 		# make sure images are float32 between 0 and 1
 		assert imgs.dtype == 'uint8' or imgs.dtype == 'float32'
 		if (imgs.dtype == 'uint8'):
 			imgs = imgs.astype('float32') / 255.0
 
-		print('pixels11')
 		assert imgs.shape[0] > 0
-
-		return imgs, noise
+		return imgs
 
 		
 
