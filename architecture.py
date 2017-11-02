@@ -3,7 +3,7 @@ import numpy as np
 
 from layers import BN, conv2d, conv2dtr, dense, elu, flatten, reshape, tanh
 
-class VAEGAN():
+class VAEGAN:
     ''' Generative adversarial network with encoder. '''
     def __init__(self, is_training, img_shape=(64, 64, 3), zsize=128):
         # Input image shape: x, y, channels
@@ -20,29 +20,26 @@ class VAEGAN():
 
             bn = BN(self.is_training)
 
-
-
             t = elu(bn(conv2d(inputs, 64)))
             t = elu(bn(conv2d(inputs, 128)))
             t = elu(bn(conv2d(inputs, 256)))
             
             t = flatten(t)
-
-
             t = elu(bn(dense(t, 512)))
             
             # keep means and logsigma for computing variational loss
-            self.means = elu(dense(t, self.zsize))
-            self.logsigmas = elu(dense(t, self.zsize))
+            means = elu(dense(t, self.zsize))
+            logsigmas = elu(dense(t, self.zsize))
             
-            sigmas = tf.exp(0.5 * self.logsigmas) # see Hands on machine learning, Geron, p. 435
+            sigmas = tf.exp(0.5 * logsigmas) # see Hands on machine learning, Geron, p. 435
             sample = tf.random_normal(tf.shape(sigmas), dtype=tf.float32)
-            
-            return sample * sigmas + self.means
+            output = sample * sigmas + means
+          
+            return output, logsigmas, means
 
-    def latent_loss(self):
+    def latent_loss(self, logsigmas, means):
         with tf.variable_scope('latent_loss'):
-            loss = 0.5 * tf.reduce_mean(tf.exp(self.logsigmas) + tf.square(self.means) - 1 - self.logsigmas)
+            loss = 0.5 * tf.reduce_mean(tf.exp(logsigmas) + tf.square(means) - 1 - logsigmas)
             return loss
 
     def generator(self, inputs, scope='generator', reuse=None):
@@ -75,12 +72,12 @@ class VAEGAN():
             t = elu(bn(conv2d(t, 512)))
 
             # use this vector to compare similarity of two images
-            self.similarity = flatten(t)
+            similarity = flatten(t)
 
             # output classification: probability an image is fake
-            logits = dense(self.similarity, 1)
-            classification = sigmoid(self.logits)
-            return classification, logits
+            logits = dense(similarity, 1)
+            classification = sigmoid(logits)
+            return classification, logits, similarity
 
 
 
