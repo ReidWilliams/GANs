@@ -1,11 +1,9 @@
-import scipy as sp
 from skimage.transform import resize
 import matplotlib.pyplot as plt
 from skimage.util import crop
 import numpy as np
 import os
 import math
-
 
 def imshow(imgs, cols=4):
     fig = plt.figure(figsize=(15,8))
@@ -16,11 +14,6 @@ def imshow(imgs, cols=4):
         a=fig.add_subplot(rows, cols, i+1)
         plt.imshow(imgs[i])
         plt.axis('off')
-
-def load_img(id, img_directory):
-    filename = '%06d.jpg' % id
-    path = os.path.join(img_directory, filename)
-    return sp.ndimage.imread(path)
 
 # resize smaller, cropping if necessary
 def resize_crop(img, desired_dims):
