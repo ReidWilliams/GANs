@@ -17,13 +17,13 @@ outputs_z_directory = '/home/ec2-user/outputs/vaegan-celeba/z'
 log_directory = '/home/ec2-user/tf-logs/vaegan-celeba'
 cache_directory = '/home/ec2-user/joblib-cache'
 batch_size = 64
-training_set_size = 25000
-img_size = 128
+training_set_size = 50000
+img_size = 64
 
 # For adam optimizer
 learning_rate = 0.0002
 learning_beta1 = 0.5
-gamma = 0.001
+gamma = 0.01
 
 zsize = 128
 
@@ -72,7 +72,7 @@ disc_gx_out, disc_gx_logits = disc_gx.discriminator(gen_enc, is_training, reuse=
 # set up loss functions and training_ops
 
 disc_x_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-    labels=(tf.ones_like(disc_x_logits)),
+    labels=(tf.ones_like(disc_x_logits) - 0.1),
     logits=disc_x_logits))
 
 disc_gz_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(

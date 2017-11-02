@@ -12,13 +12,13 @@ from utils import imshow, resize_crop, load_img, pixels11, pixels01
 # Setup
 
 # img_directory = '/Users/rwilliams/Desktop/celeba/training'
-img_directory = '/home/ec2-user/training-data/img_align_celeba'
+img_directory = '/home/ec2-user/training-data/myra'
 # model_save_path = '/home/ec2-user/tf-checkpoints/vae-celeba/checkpoint.ckpt'
-outputs_directory = '/home/ec2-user/outputs/vaegan-celeba'
-log_directory = '/home/ec2-user/tf-logs/vaegan-celeba'
+outputs_directory = '/home/ec2-user/outputs/myra'
+log_directory = '/home/ec2-user/tf-logs/myra'
 cache_directory = '/home/ec2-user/joblib-cache'
 batch_size = 64
-training_set_size = 10000
+training_set_size = 2794
 img_size = 64
 
 # For adam optimizer
