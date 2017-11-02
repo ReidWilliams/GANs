@@ -15,7 +15,7 @@ def makedirs(d):
 class Model:
     def __init__(self, training_directory, batch_size=64, img_shape=(64, 64), \
         learning_rate=0.0002, learning_beta1=0.5, gamma=0.01, zsize=128, \
-        save_freq=20, epochs=10000):
+        save_freq=10, epochs=10000):
 
         self.batch_size = batch_size
         self.img_shape = img_shape + (3,) # add channels
