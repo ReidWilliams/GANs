@@ -1,7 +1,8 @@
 import tensorflow as tf
 import numpy as np
 
-from layers import BN, conv2d, conv2dtr, dense, elu, flatten, reshape, tanh
+from ops import BN, conv2d, conv2dtr, dense, elu, \
+                flatten, reshape, sigmoid, tanh
 
 class VAEGAN:
     ''' Generative adversarial network with encoder. '''
@@ -48,6 +49,8 @@ class VAEGAN:
             # shrink down to a base level of filters. This is lowest number of filters
             # before wiring to 3 channel image (rgb).
 
+            bn = BN(self.is_training)
+
             # number of pixels on each side for starting 2d dimensions
             _len = int(self.img_shape[0] / 16)
 
@@ -65,6 +68,8 @@ class VAEGAN:
 
     def discriminator(self, inputs, scope='discriminator', reuse=None):
         with tf.variable_scope(scope, reuse=reuse):
+
+            bn = BN(self.is_training)
 
             t = elu(conv2d(inputs, 64)) # no bn here
             t = elu(bn(conv2d(t, 128)))

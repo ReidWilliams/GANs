@@ -28,7 +28,7 @@ def reshape(inputs, shape):
     return tf.reshape(inputs, shape)
 
 def elu(inputs):
-    return tf.nn.elu(t)
+    return tf.nn.elu(inputs)
 
 def sigmoid(inputs):
     return tf.sigmoid(inputs)
