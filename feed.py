@@ -56,8 +56,9 @@ class Feed:
 		cidx = self.cidx(batch_idx)	
 		imgs = self.imgs[ cidx*self.batch_size:(cidx+1)*self.batch_size ]
 
-		# make sure images are float32 between 0 and 1
-		assert imgs.dtype == 'uint8' or imgs.dtype == 'float32'
+		if (imgs.dtype == 'float64'):
+			imgs = imgs.astype('float32')
+			
 		if (imgs.dtype == 'uint8'):
 			imgs = imgs.astype('float32') / 255.0
 
