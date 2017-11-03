@@ -56,8 +56,7 @@ class Feed:
 			imgs.append(ar)
 			img.close()
 
-		# self.imgs = np.array(imgs)
-		np.array(imgs)
+		self.imgs = np.asarray(imgs)
 		self.cached_batch_start = batch_idx
 
 	def feed(self, batch_idx):
