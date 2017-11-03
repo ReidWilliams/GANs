@@ -115,8 +115,8 @@ class Model:
                 logits=self.Dz_logits))
 
         # can include pixelwise, similarity, style
-        self.G_loss = self.pixel_similarity_loss
-        # self.G_loss = self.pixel_similarity_loss + self.style_loss
+        # self.G_loss = self.pixel_similarity_loss
+        self.G_loss = self.gamma * self.D_similarity_loss + self.style_loss
 
         self.latent_loss = self.arch.latent_loss(self.E_logsigmas, self.E_means)
         # can include latent loss, pixelwise loss, similarity
@@ -180,7 +180,7 @@ class Model:
         logcounter = 0
 
         # images to encode for saving examples
-        example_feed = np.copy(self.feed.feed(0))
+        example_feed = np.copy(self.feed.feed(21))
 
         for epoch in range(self.epochs):            
             for batch in range(batches):
@@ -218,7 +218,7 @@ class Model:
     def output_examples(self, feed):
         imgs = self.sess.run(self.Genc, feed_dict={ self.X: feed, self.is_training: False })
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
-        as_ints = (pixels01(imgs[0]) * 255.0).astype('uint8')
+        as_ints = (pixels01(imgs[39]) * 255.0).astype('uint8')
         Image.fromarray(as_ints).save(path)
         self.output_img_idx += 1 
 
