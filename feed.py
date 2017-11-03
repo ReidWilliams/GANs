@@ -50,11 +50,15 @@ class Feed:
 		imgs = []
 		for i in range(len(cache_filepaths)):
 			img = Image.open(cache_filepaths[i])
-			imgs.append(np.copy(np.array(img)))
+			ar = np.copy(np.array(img))
+			if (len(ar.shape) < 3):
+
+				print('weird image')
+				print(cache_filepaths[i])
+
+			imgs.append()
 			img.close()
 
-		print('dims')
-		print(imgs[0].shape)
 		self.imgs = np.array(imgs)
 		self.cached_batch_start = batch_idx
 
