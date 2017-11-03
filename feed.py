@@ -50,7 +50,7 @@ class Feed:
 		imgs = []
 		for i in range(len(cache_filepaths)):
 			img = Image.open(cache_filepaths[i])
-			imgs[i] = np.copy(np.array(img))
+			imgs.append(np.copy(np.array(img)))
 			img.close()
 
 		self.imgs = np.array(imgs)
