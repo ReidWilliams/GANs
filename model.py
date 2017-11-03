@@ -120,7 +120,8 @@ class Model:
 
         self.latent_loss = self.arch.latent_loss(self.E_logsigmas, self.E_means)
         # can include latent loss, pixelwise loss, similarity
-        self.E_loss = self.pixel_similarity_loss + self.latent_loss
+        # self.E_loss = self.pixel_similarity_loss + self.latent_loss
+        self.E_loss = self.D_similarity_loss + self.latent_loss
 
     def build_optimizers(self):
         E_vars = [i for i in tf.trainable_variables() if 'encoder' in i.name]
