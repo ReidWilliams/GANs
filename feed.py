@@ -53,6 +53,8 @@ class Feed:
 			imgs.append(np.copy(np.array(img)))
 			img.close()
 
+		print('dims')
+		print(imgs[0].shape)
 		self.imgs = np.array(imgs)
 		self.cached_batch_start = batch_idx
 
