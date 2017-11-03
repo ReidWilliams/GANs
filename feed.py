@@ -1,5 +1,5 @@
 import numpy as np
-from PIL import Image
+import scipy as sp
 import os
 import sys
 
@@ -12,8 +12,8 @@ class Feed:
 		self.ncached_batches = ncached_batches
 
 		# filenames for all files in data dir
-		self.filenames = sorted([f for f in os.listdir(self.data_directory) \
-			if os.path.isfile(os.path.join(self.data_directory, f))])
+		self.filenames = [f for f in os.listdir(self.data_directory) \
+			if os.path.isfile(os.path.join(self.data_directory, f))]
 
 		# index of first batch preloaded in memory
 		self.cached_batch_start = -sys.maxsize
@@ -47,16 +47,7 @@ class Feed:
 		# full paths
 		cache_filepaths = [os.path.join(self.data_directory, f) for f in self.filenames[start:end]]
 
-		imgs = []
-		for i in range(len(cache_filepaths)):
-			img = Image.open(cache_filepaths[i])
-			ar = np.copy(np.array(img))
-			print('%s: %s' % (cache_filepaths[i], ar.shape))
-
-			imgs.append(ar)
-			img.close()
-
-		self.imgs = np.asarray(imgs)
+		self.imgs = np.array([sp.ndimage.imread(f) for f in cache_filepaths])
 		self.cached_batch_start = batch_idx
 
 	def feed(self, batch_idx):
