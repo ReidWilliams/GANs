@@ -51,12 +51,9 @@ class Feed:
 		for i in range(len(cache_filepaths)):
 			img = Image.open(cache_filepaths[i])
 			ar = np.copy(np.array(img))
-			if (len(ar.shape) < 3):
+			print('%s: %s' % (cache_filepaths[i], ar.shape))
 
-				print('weird image')
-				print(cache_filepaths[i])
-
-			imgs.append()
+			imgs.append(ar)
 			img.close()
 
 		self.imgs = np.array(imgs)
