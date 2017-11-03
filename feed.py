@@ -1,5 +1,5 @@
 import numpy as np
-import scipy as sp
+from PIL import Image
 import os
 import sys
 
@@ -47,7 +47,7 @@ class Feed:
 		# full paths
 		cache_filepaths = [os.path.join(self.data_directory, f) for f in self.filenames[start:end]]
 
-		self.imgs = np.array([sp.ndimage.imread(f) for f in cache_filepaths])
+		self.imgs = np.array([Image.open(f) for f in cache_filepaths])
 		self.cached_batch_start = batch_idx
 
 	def feed(self, batch_idx):
