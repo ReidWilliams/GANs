@@ -21,6 +21,13 @@ class Model:
 
         self.batch_size = batch_size
         self.img_shape = img_shape + (3,) # add channels
+        self.E_lr = E_lr
+        self.G_lr = G_lr
+        self.D_lr = D_lr
+        self.E_beta1 = E_beta1
+        self.G_beta1 = G_beta1
+        self.D_beta1 = D_beta1
+
         self.learning_rate = learning_rate
         self.beta1 = learning_beta1
         
