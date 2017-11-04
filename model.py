@@ -14,7 +14,7 @@ def makedirs(d):
 
 class Model:
     def __init__(self, training_directory, batch_size=64, img_shape=(64, 64),
-        E_lr=0.001, G_lr=0.001, D_lr=0.0002,
+        E_lr=0.0004, G_lr=0.0004, D_lr=0.0004,
         E_beta1=0.5, G_beta1=0.5, D_beta1=0.5, 
         gamma=0.1, zsize=128,
         save_freq=10, epochs=10000):
@@ -89,7 +89,7 @@ class Model:
 
     def build_losses(self):
         self.Dreal_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=(tf.ones_like(self.Dreal_logits) - 0.1),
+            labels=(tf.ones_like(self.Dreal_logits) - 0.25),
             logits=self.Dreal_logits))
 
         self.Denc_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
