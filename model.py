@@ -122,7 +122,8 @@ class Model:
 
         # can include pixelwise, similarity, style
         # self.G_loss = self.pixel_similarity_loss
-        self.G_loss = self.gamma * self.D_similarity_loss + self.style_loss
+        # self.G_loss = self.gamma * self.D_similarity_loss + self.style_loss
+        self.G_loss = self.D_similarity_loss
 
         self.latent_loss = self.arch.latent_loss(self.E_logsigmas, self.E_means)
         # can include latent loss, pixelwise loss, similarity
