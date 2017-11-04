@@ -13,8 +13,10 @@ def makedirs(d):
           
 
 class Model:
-    def __init__(self, training_directory, batch_size=64, img_shape=(64, 64), \
-        learning_rate=0.0002, learning_beta1=0.5, gamma=0.1, zsize=128, \
+    def __init__(self, training_directory, batch_size=64, img_shape=(64, 64),
+        E_lr=0.001, G_lr=0.001, D_lr=0.0002,
+        E_beta1=0.5, G_beta1=0.5, D_beta1=0.5, 
+        gamma=0.1, zsize=128,
         save_freq=10, epochs=10000):
 
         self.batch_size = batch_size
@@ -128,9 +130,9 @@ class Model:
         G_vars = [i for i in tf.trainable_variables() if 'generator' in i.name]
         D_vars = [i for i in tf.trainable_variables() if 'discriminator' in i.name]
   
-        E_opt = tf.train.AdamOptimizer(learning_rate=self.learning_rate, beta1=self.beta1)
-        G_opt = tf.train.AdamOptimizer(learning_rate=self.learning_rate, beta1=self.beta1)
-        D_opt = tf.train.AdamOptimizer(learning_rate=self.learning_rate, beta1=self.beta1)
+        E_opt = tf.train.AdamOptimizer(learning_rate=self.E_lr, beta1=self.E_beta1)
+        G_opt = tf.train.AdamOptimizer(learning_rate=self.G_lr, beta1=self.G_beta1)
+        D_opt = tf.train.AdamOptimizer(learning_rate=self.D_lf, beta1=self.D_beta1)
         
         self.E_train = E_opt.minimize(self.E_loss, var_list=E_vars)
         self.G_train = G_opt.minimize(self.G_loss, var_list=G_vars)
