@@ -28,9 +28,6 @@ class Model:
         self.G_beta1 = G_beta1
         self.D_beta1 = D_beta1
 
-        self.learning_rate = learning_rate
-        self.beta1 = learning_beta1
-        
         # weights strength of similarity loss compared 
         # to discriminator classification loss
         self.gamma = gamma
