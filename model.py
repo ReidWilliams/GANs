@@ -136,7 +136,7 @@ class Model:
   
         E_opt = tf.train.AdamOptimizer(learning_rate=self.E_lr, beta1=self.E_beta1)
         G_opt = tf.train.AdamOptimizer(learning_rate=self.G_lr, beta1=self.G_beta1)
-        D_opt = tf.train.AdamOptimizer(learning_rate=self.D_lf, beta1=self.D_beta1)
+        D_opt = tf.train.AdamOptimizer(learning_rate=self.D_lr, beta1=self.D_beta1)
         
         self.E_train = E_opt.minimize(self.E_loss, var_list=E_vars)
         self.G_train = G_opt.minimize(self.G_loss, var_list=G_vars)
