@@ -56,6 +56,7 @@ def pixels11(images):
 def pixels01(images):
     return 0.5*(images + 1)
 
+# from https://github.com/carpedm20/DCGAN-tensorflow/blob/master/utils.py
 def tile(images, size):
     h, w = images.shape[1], images.shape[2]
     if (images.shape[3] in (3,4)):
