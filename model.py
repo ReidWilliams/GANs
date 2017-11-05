@@ -218,10 +218,10 @@ class Model:
                 if (batch % self.save_freq == 0):
                     printnow('Epoch %s, batch %s/%s, saving session and examples' % (epoch, batch, batches))
                     self.save_session()
-                    self.output_examples(example_feed)
+                    self.output_examples(None)
 
     def save_session(self):
-        self.saver.save(self.sess, None)
+        self.saver.save(self.sess, self.checkpoint_path)
 
     def output_examples(self, feed):
         feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
