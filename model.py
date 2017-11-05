@@ -221,7 +221,7 @@ class Model:
                     self.output_examples(example_feed)
 
     def save_session(self):
-        self.saver.save(self.sess, self.checkpoint_path)
+        self.saver.save(self.sess, None)
 
     def output_examples(self, feed):
         feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
