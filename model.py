@@ -5,7 +5,7 @@ import os
 
 from feed import Feed
 from architecture import VAEGAN
-from utils import pixels01, pixels11
+from utils import pixels01, pixels11, tile
 
 def printnow(x, end='\n'): print(x, flush=True, end=end)
 def makedirs(d): 
@@ -227,7 +227,8 @@ class Model:
         imgs = self.sess.run(self.Genc, feed_dict={ self.X: feed, self.is_training: False })
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
         as_ints = (pixels01(imgs[39]) * 255.0).astype('uint8')
-        Image.fromarray(as_ints).save(path)
+        tiled = tile(as_ints, (self.img_shape[0], self.img_shape[1])
+        Image.fromarray(tiled).save(path)
         self.output_img_idx += 1 
 
     
