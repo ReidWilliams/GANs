@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
-from ops import BN, conv2d, conv2dtr, dense, elu, \
+from ops import BN, conv2d, conv2dtr, dense, lrelu, \
                 flatten, reshape, sigmoid, tanh
 
 class VAEGAN:
@@ -21,16 +21,16 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = elu(bn(conv2d(inputs, 64)))
-            t = elu(bn(conv2d(inputs, 128)))
-            t = elu(bn(conv2d(inputs, 256)))
+            t = lrelu(bn(conv2d(inputs, 64)))
+            t = lrelu(bn(conv2d(inputs, 128)))
+            t = lrelu(bn(conv2d(inputs, 256)))
             
             t = flatten(t)
-            t = elu(bn(dense(t, 512)))
+            t = lrelu(bn(dense(t, 512)))
             
             # keep means and logsigma for computing variational loss
-            means = elu(dense(t, self.zsize))
-            logsigmas = elu(dense(t, self.zsize))
+            means = lrelu(dense(t, self.zsize))
+            logsigmas = lrelu(dense(t, self.zsize))
             
             sigmas = tf.exp(0.5 * logsigmas) # see Hands on machine learning, Geron, p. 435
             sample = tf.random_normal(tf.shape(sigmas), dtype=tf.float32)
@@ -55,11 +55,11 @@ class VAEGAN:
             _len = int(self.img_shape[0] / 16)
 
             t = dense(inputs, _len*_len*512)
-            t = elu(bn(reshape(t, (tf.shape(t)[0], _len, _len, 512))))
+            t = lrelu(bn(reshape(t, (tf.shape(t)[0], _len, _len, 512))))
 
-            t = elu(bn(conv2dtr(t, 512)))
-            t = elu(bn(conv2dtr(t, 256)))
-            t = elu(bn(conv2dtr(t, 128)))
+            t = lrelu(bn(conv2dtr(t, 512)))
+            t = lrelu(bn(conv2dtr(t, 256)))
+            t = lrelu(bn(conv2dtr(t, 128)))
 
             # final conv2d  transpose to get to filter depth of 3, for rgb channels
             logits = conv2dtr(t, self.img_shape[2])
@@ -71,10 +71,10 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = elu(conv2d(inputs, 64)) # no bn here
-            t = elu(bn(conv2d(t, 128)))
-            t = elu(bn(conv2d(t, 256)))
-            t = elu(bn(conv2d(t, 512)))
+            t = lrelu(conv2d(inputs, 64)) # no bn here
+            t = lrelu(bn(conv2d(t, 128)))
+            t = lrelu(bn(conv2d(t, 256)))
+            t = lrelu(bn(conv2d(t, 512)))
 
             # use this vector to compare similarity of two images
             similarity = flatten(t)

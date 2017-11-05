@@ -16,7 +16,7 @@ class Model:
     def __init__(self, training_directory, batch_size=64, img_shape=(64, 64),
         E_lr=0.0004, G_lr=0.0004, D_lr=0.0004,
         E_beta1=0.5, G_beta1=0.5, D_beta1=0.5, 
-        gamma=0.1, zsize=128,
+        gamma=0.0, zsize=128,
         save_freq=10, epochs=10000):
 
         self.batch_size = batch_size
@@ -122,8 +122,8 @@ class Model:
 
         # can include pixelwise, similarity, style
         # self.G_loss = self.pixel_similarity_loss
-        # self.G_loss = self.gamma * self.D_similarity_loss + self.style_loss
-        self.G_loss = self.D_similarity_loss
+        self.G_loss = self.gamma * self.D_similarity_loss + self.style_loss
+        # self.G_loss = self.D_similarity_loss
 
         self.latent_loss = self.arch.latent_loss(self.E_logsigmas, self.E_means)
         # can include latent loss, pixelwise loss, similarity
