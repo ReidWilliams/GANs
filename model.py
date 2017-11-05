@@ -188,7 +188,7 @@ class Model:
         logcounter = 0
 
         # images to encode for saving examples
-        example_feed = np.copy(self.feed.feed(21))
+        # example_feed = np.copy(self.feed.feed(21))
 
         for epoch in range(self.epochs):            
             for batch in range(batches):
@@ -224,7 +224,8 @@ class Model:
         self.saver.save(self.sess, self.checkpoint_path)
 
     def output_examples(self, feed):
-        imgs = self.sess.run(self.Genc, feed_dict={ self.X: feed, self.is_training: False })
+        feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
+        imgs = self.sess.run(self.Gz, feed_dict={ self.Z: feed, self.is_training: False })
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
         tiled = tile(imgs, (8, 8))
         as_ints = (pixels01(tiled) * 255.0).astype('uint8')
