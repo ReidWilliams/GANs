@@ -62,7 +62,8 @@ def tile(images, size):
     if (images.shape[3] in (3,4)):
         c = images.shape[3]
         img = np.zeros((h * size[0], w * size[1], c))
-        print('images size %s' % images.shape)
+        print('images shape')
+        print(images.shape)
         print('tile size %s' % img.shape)
         for idx, image in enumerate(images):
             i = idx % size[1]
