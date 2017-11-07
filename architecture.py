@@ -24,6 +24,7 @@ class VAEGAN:
             t = lrelu(bn(conv2d(inputs, 64)))
             t = lrelu(bn(conv2d(inputs, 128)))
             t = lrelu(bn(conv2d(inputs, 256)))
+            t = lrelu(bn(conv2d(inputs, 512)))
             
             t = flatten(t)
             t = lrelu(bn(dense(t, 512)))
@@ -51,12 +52,10 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            # number of pixels on each side for starting 2d dimensions
-            _len = int(self.img_shape[0] / 16)
+            t = dense(inputs, 5*4*1024)
+            t = lrelu(bn(reshape(t, (tf.shape(t)[0], 5, 4, 1024))))
 
-            t = dense(inputs, _len*_len*512)
-            t = lrelu(bn(reshape(t, (tf.shape(t)[0], _len, _len, 512))))
-
+            t = lrelu(bn(conv2dtr(t, 1024)))
             t = lrelu(bn(conv2dtr(t, 512)))
             t = lrelu(bn(conv2dtr(t, 256)))
             t = lrelu(bn(conv2dtr(t, 128)))
@@ -75,6 +74,7 @@ class VAEGAN:
             t = lrelu(bn(conv2d(t, 128)))
             t = lrelu(bn(conv2d(t, 256)))
             t = lrelu(bn(conv2d(t, 512)))
+            t = lrelu(bn(conv2d(t, 1024)))
 
             # use this vector to compare similarity of two images
             similarity = flatten(t)
