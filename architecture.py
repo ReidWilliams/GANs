@@ -21,10 +21,9 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = lrelu(bn(conv2d(inputs, 64)))
+            t = lrelu(bn(conv2d(inputs, 64, strides=4)))
             t = lrelu(bn(conv2d(inputs, 128)))
             t = lrelu(bn(conv2d(inputs, 256)))
-            t = lrelu(bn(conv2d(inputs, 512)))
             
             t = flatten(t)
             t = lrelu(bn(dense(t, 512)))
@@ -56,9 +55,9 @@ class VAEGAN:
             t = lrelu(bn(reshape(t, (tf.shape(t)[0], 5, 4, 1024))))
 
             t = lrelu(bn(conv2dtr(t, 512)))
-            t = lrelu(bn(conv2dtr(t, 512)))
             t = lrelu(bn(conv2dtr(t, 256)))
             t = lrelu(bn(conv2dtr(t, 128)))
+            t = lrelu(bn(conv2dtr(t, 64)))
 
             # final conv2d  transpose to get to filter depth of 3, for rgb channels
             logits = conv2dtr(t, self.img_shape[2])
@@ -70,10 +69,9 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = lrelu(conv2d(inputs, 64)) # no bn here
+            t = lrelu(conv2d(inputs, 64, strides=4)) # no bn here
             t = lrelu(bn(conv2d(t, 128)))
             t = lrelu(bn(conv2d(t, 256)))
-            t = lrelu(bn(conv2d(t, 512)))
             t = lrelu(bn(conv2d(t, 512)))
 
             # use this vector to compare similarity of two images

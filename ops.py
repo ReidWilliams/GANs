@@ -1,13 +1,13 @@
 import tensorflow as tf
 
-def conv2d(inputs, filters):
-    return tf.layers.conv2d(inputs, filters, 5, strides=2, padding='same',
+def conv2d(inputs, filters, strides=2):
+    return tf.layers.conv2d(inputs, filters, 5, strides=strides, padding='same',
         kernel_initializer=tf.truncated_normal_initializer(stddev=0.02),
         bias_initializer=tf.constant_initializer(0.0))
 
 # conv2d transpose
-def conv2dtr(inputs, filters):
-    return tf.layers.conv2d_transpose(inputs, filters, 5, strides=2, padding='same',
+def conv2dtr(inputs, filters, strides=2):
+    return tf.layers.conv2d_transpose(inputs, filters, 5, strides=strides, padding='same',
         kernel_initializer=tf.truncated_normal_initializer(stddev=0.02),
         bias_initializer=tf.constant_initializer(0.0))
 
