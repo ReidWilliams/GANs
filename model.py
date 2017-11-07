@@ -56,7 +56,7 @@ class Model:
             if os.path.isfile(os.path.join(self.dirs['output'], f))])
 
         # data feed    
-        self.feed = Feed(self.dirs['training'], self.batch_size)
+        self.feed = Feed(self.dirs['training'], self.batch_size, shuffle=True)
         # bool used by batch normalization. BN behavior is different when training
         # vs predicting
         self.is_training = tf.placeholder(tf.bool)
