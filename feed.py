@@ -16,7 +16,6 @@ class Feed:
 			if os.path.isfile(os.path.join(self.data_directory, f))])
 
 		if (shuffle):
-			print('shuffling feed')
 			np.random.shuffle(self.filenames)
 
 		# index of first batch preloaded in memory
