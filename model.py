@@ -41,7 +41,7 @@ class Model:
             'training':    training_directory,
             'output':      os.path.join(pwd, 'output'),
             'logs':        os.path.join(pwd, 'logs'),
-            'checkpoints': checkpoints_path or os.path.join(pwd, 'checkpoints')
+            'checkpoints': os.path.join(pwd, 'checkpoints')
         }
 
         # set or create tensorflow session
@@ -53,7 +53,7 @@ class Model:
         makedirs(self.dirs['logs'])
         makedirs(self.dirs['output'])
         makedirs(self.dirs['checkpoints'])
-        self.checkpoint_path = os.path.join(self.dirs['checkpoints'], 'checkpoint.ckpt')
+        self.checkpoints_path = checkpoints_path or os.path.join(self.dirs['checkpoints'], 'checkpoint.ckpt')
 
         # get number of files in output so we don't overwrite
         self.output_img_idx = len([f for f in os.listdir(self.dirs['output']) \
@@ -151,8 +151,8 @@ class Model:
         self.saver = tf.train.Saver()
         
         try:
-            print('trying to restore session from %s' % self.checkpoint_path)
-            self.saver.restore(self.sess, self.checkpoint_path)
+            print('trying to restore session from %s' % self.checkpoints_path)
+            self.saver.restore(self.sess, self.checkpoints_path)
             print('restored session')
         except:
             print('failed to restore session, creating a new one')
@@ -225,7 +225,7 @@ class Model:
                     self.output_examples(example_feed)
 
     def save_session(self):
-        self.saver.save(self.sess, self.checkpoint_path)
+        self.saver.save(self.sess, self.checkpoints_path)
 
     def output_examples(self, feed):
         # feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
