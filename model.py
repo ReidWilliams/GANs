@@ -17,7 +17,7 @@ class Model:
         E_lr=0.0004, G_lr=0.0004, D_lr=0.0004,
         E_beta1=0.5, G_beta1=0.5, D_beta1=0.5, 
         gamma=0.01, zsize=128,
-        save_freq=10, epochs=10000):
+        save_freq=10, epochs=10000, sess=None):
 
         self.batch_size = batch_size
         self.img_shape = img_shape + (3,) # add channels
@@ -44,6 +44,11 @@ class Model:
             'logs':        os.path.join(pwd, 'logs'),
             'checkpoints': os.path.join(pwd, 'checkpoints')
         }
+
+        # set or create tensorflow session
+        self.sess = sess
+        if not self.sess:
+            self.sess = tf.InteractiveSession()
 
         # create directories if they don't exist
         makedirs(self.dirs['logs'])
@@ -145,7 +150,7 @@ class Model:
 
     def setup_session(self):
         self.saver = tf.train.Saver()
-        self.sess = tf.InteractiveSession()
+        
         try:
             print('trying to restore session from %s' % self.checkpoint_path)
             self.saver.restore(self.sess, self.checkpoint_path)
