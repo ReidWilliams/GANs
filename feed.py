@@ -16,7 +16,7 @@ class Feed:
 			if os.path.isfile(os.path.join(self.data_directory, f))]
 
 		if (shuffle):
-			self.filenames = sorted(self.filenames)
+			np.random.shuffle(self.filenames)
 
 		# index of first batch preloaded in memory
 		self.cached_batch_start = -sys.maxsize
