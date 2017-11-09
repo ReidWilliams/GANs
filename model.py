@@ -17,7 +17,7 @@ class Model:
         E_lr=0.0004, G_lr=0.0004, D_lr=0.0004,
         E_beta1=0.5, G_beta1=0.5, D_beta1=0.5, 
         gamma=0.01, zsize=128,
-        save_freq=10, epochs=10000):
+        save_freq=10, epochs=10000, sess=None):
 
         self.batch_size = batch_size
         self.img_shape = img_shape + (3,) # add channels
@@ -45,6 +45,11 @@ class Model:
             'checkpoints': os.path.join(pwd, 'checkpoints')
         }
 
+        # set or create tensorflow session
+        self.sess = sess
+        if not self.sess:
+            self.sess = tf.InteractiveSession()
+
         # create directories if they don't exist
         makedirs(self.dirs['logs'])
         makedirs(self.dirs['output'])
@@ -56,7 +61,7 @@ class Model:
             if os.path.isfile(os.path.join(self.dirs['output'], f))])
 
         # data feed    
-        self.feed = Feed(self.dirs['training'], self.batch_size)
+        self.feed = Feed(self.dirs['training'], self.batch_size, shuffle=True)
         # bool used by batch normalization. BN behavior is different when training
         # vs predicting
         self.is_training = tf.placeholder(tf.bool)
@@ -145,7 +150,7 @@ class Model:
 
     def setup_session(self):
         self.saver = tf.train.Saver()
-        self.sess = tf.InteractiveSession()
+        
         try:
             print('trying to restore session from %s' % self.checkpoint_path)
             self.saver.restore(self.sess, self.checkpoint_path)

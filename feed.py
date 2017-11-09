@@ -5,7 +5,7 @@ import sys
 
 class Feed:
 	'''Feed image data to training process. '''
-	def __init__(self, data_directory, batch_size, ncached_batches=100):
+	def __init__(self, data_directory, batch_size, ncached_batches=100, shuffle=False):
 		self.data_directory = data_directory
 		self.batch_size = batch_size
 		# number of batches to preload into memory
@@ -14,6 +14,9 @@ class Feed:
 		# filenames for all files in data dir
 		self.filenames = [f for f in os.listdir(self.data_directory) \
 			if os.path.isfile(os.path.join(self.data_directory, f))]
+
+		if (shuffle):
+			self.filenames = sorted(self.filenames)
 
 		# index of first batch preloaded in memory
 		self.cached_batch_start = -sys.maxsize
