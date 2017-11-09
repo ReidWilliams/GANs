@@ -75,17 +75,17 @@ class Model:
         # generator that uses Z random draws
         self.Gz = self.arch.generator(self.Z, reuse=True)
 
-        # # discriminator connected to real image input (X)
-        # self.Dreal, self.Dreal_logits, self.Dreal_similarity = \
-        #     self.arch.discriminator(self.X)
+        # discriminator connected to real image input (X)
+        self.Dreal, self.Dreal_logits, self.Dreal_similarity = \
+            self.arch.discriminator(self.X)
 
-        # # discriminator connected to X -> encoder -> generator
-        # self.Denc, self.Denc_logits, self.Denc_similarity = \
-        #     self.arch.discriminator(self.Genc, reuse=True)
+        # discriminator connected to X -> encoder -> generator
+        self.Denc, self.Denc_logits, self.Denc_similarity = \
+            self.arch.discriminator(self.Genc, reuse=True)
 
-        # # discriminator connected to Z -> generator
-        # self.Dz, self.Dz_logits, _ = \
-        #     self.arch.discriminator(self.Gz, reuse=True)
+        # discriminator connected to Z -> generator
+        self.Dz, self.Dz_logits, _ = \
+            self.arch.discriminator(self.Gz, reuse=True)
 
     def build_losses(self):
         self.Dreal_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
