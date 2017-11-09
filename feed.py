@@ -12,11 +12,11 @@ class Feed:
 		self.ncached_batches = ncached_batches
 
 		# filenames for all files in data dir
-		self.filenames = [f for f in os.listdir(self.data_directory) \
-			if os.path.isfile(os.path.join(self.data_directory, f))]
+		self.filenames = sorted([f for f in os.listdir(self.data_directory) \
+			if os.path.isfile(os.path.join(self.data_directory, f))])
 
 		if (shuffle):
-			self.filenames = sorted(self.filenames)
+			np.random.shuffle(self.filenames)
 
 		# index of first batch preloaded in memory
 		self.cached_batch_start = -sys.maxsize

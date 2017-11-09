@@ -14,10 +14,9 @@ def makedirs(d):
 
 class Model:
     def __init__(self, training_directory, batch_size=64, img_shape=(64, 64),
-        E_lr=0.0004, G_lr=0.0004, D_lr=0.0004,
-        E_beta1=0.5, G_beta1=0.5, D_beta1=0.5, 
-        gamma=0.01, zsize=128,
-        save_freq=10, epochs=10000):
+        E_lr=0.0004, G_lr=0.0004, D_lr=0.0004, E_beta1=0.5, G_beta1=0.5, D_beta1=0.5, 
+        gamma=0.01, zsize=128, save_freq=10, epochs=10000, 
+        sess=None, checkpoints_path=None):
 
         self.batch_size = batch_size
         self.img_shape = img_shape + (3,) # add channels
@@ -45,11 +44,16 @@ class Model:
             'checkpoints': os.path.join(pwd, 'checkpoints')
         }
 
+        # set or create tensorflow session
+        self.sess = sess
+        if not self.sess:
+            self.sess = tf.InteractiveSession()
+
         # create directories if they don't exist
         makedirs(self.dirs['logs'])
         makedirs(self.dirs['output'])
         makedirs(self.dirs['checkpoints'])
-        self.checkpoint_path = os.path.join(self.dirs['checkpoints'], 'checkpoint.ckpt')
+        self.checkpoints_path = checkpoints_path or os.path.join(self.dirs['checkpoints'], 'checkpoint.ckpt')
 
         # get number of files in output so we don't overwrite
         self.output_img_idx = len([f for f in os.listdir(self.dirs['output']) \
@@ -145,10 +149,10 @@ class Model:
 
     def setup_session(self):
         self.saver = tf.train.Saver()
-        self.sess = tf.InteractiveSession()
+        
         try:
-            print('trying to restore session from %s' % self.checkpoint_path)
-            self.saver.restore(self.sess, self.checkpoint_path)
+            print('trying to restore session from %s' % self.checkpoints_path)
+            self.saver.restore(self.sess, self.checkpoints_path)
             print('restored session')
         except:
             print('failed to restore session, creating a new one')
@@ -221,7 +225,7 @@ class Model:
                     self.output_examples(example_feed)
 
     def save_session(self):
-        self.saver.save(self.sess, self.checkpoint_path)
+        self.saver.save(self.sess, self.checkpoints_path)
 
     def output_examples(self, feed):
         # feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
