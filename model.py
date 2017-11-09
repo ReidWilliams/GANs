@@ -227,7 +227,8 @@ class Model:
         # feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
         imgs = self.sess.run(self.Genc, feed_dict={ self.X: feed, self.is_training: False })
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
-        tiled = tile(imgs, (8, 8))
+        # FIXME deal with bath sizes less than 64
+        tiled = tile(imgs[:64], (8, 8))
         as_ints = (pixels01(tiled) * 255.0).astype('uint8')
         Image.fromarray(as_ints).save(path)
         self.output_img_idx += 1 
