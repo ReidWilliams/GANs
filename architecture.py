@@ -21,17 +21,19 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = lrelu(bn(conv2d(inputs, 64, strides=4)))
-            print('25: %s' % t.get_shape())
-            t = lrelu(bn(conv2d(t, 128, strides=4)))
-            print('27: %s' % t.get_shape())
+            t = lrelu(bn(conv2d(inputs, 64)))
+            # print('25: %s' % t.get_shape())
+            t = lrelu(bn(conv2d(t, 128)))
+            # print('27: %s' % t.get_shape())
             t = lrelu(bn(conv2d(t, 256)))
-            print('29: %s' % t.get_shape())
+            # print('29: %s' % t.get_shape())
+            t = lrelu(bn(conv2d(t, 512)))
+            t = lrelu(bn(conv2d(t, 1024)))
             
             t = flatten(t)
-            print('32: %s' % t.get_shape())
+            # print('32: %s' % t.get_shape())
             t = lrelu(bn(dense(t, 512)))
-            print('34: %s' % t.get_shape())
+            # print('34: %s' % t.get_shape())
             
             # keep means and logsigma for computing variational loss
             means = lrelu(dense(t, self.zsize))
@@ -56,9 +58,10 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = dense(inputs, 5*4*512)
-            t = lrelu(bn(reshape(t, (tf.shape(t)[0], 4, 5, 512))))
+            t = dense(inputs, 4*5*1024)
+            t = lrelu(bn(reshape(t, (tf.shape(t)[0], 4, 5, 1024))))
 
+            t = lrelu(bn(conv2dtr(t, 1024)))
             t = lrelu(bn(conv2dtr(t, 512)))
             t = lrelu(bn(conv2dtr(t, 256)))
             t = lrelu(bn(conv2dtr(t, 128)))
@@ -74,10 +77,11 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = lrelu(conv2d(inputs, 64, strides=4)) # no bn here
+            t = lrelu(conv2d(inputs, 64)) # no bn here
             t = lrelu(bn(conv2d(t, 128)))
             t = lrelu(bn(conv2d(t, 256)))
             t = lrelu(bn(conv2d(t, 512)))
+            t = lrelu(bn(conv2d(t, 1024)))
 
             # use this vector to compare similarity of two images
             similarity = flatten(t)
