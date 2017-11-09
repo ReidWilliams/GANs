@@ -23,9 +23,9 @@ class VAEGAN:
 
             t = lrelu(bn(conv2d(inputs, 64, strides=4)))
             print('25: %s' % t.get_shape())
-            t = lrelu(bn(conv2d(inputs, 128, strides=4)))
+            t = lrelu(bn(conv2d(t, 128, strides=4)))
             print('27: %s' % t.get_shape())
-            t = lrelu(bn(conv2d(inputs, 256)))
+            t = lrelu(bn(conv2d(t, 256)))
             print('29: %s' % t.get_shape())
             
             t = flatten(t)
