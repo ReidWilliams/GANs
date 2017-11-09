@@ -75,6 +75,7 @@ class VAEGAN:
     def discriminator(self, inputs, scope='discriminator', reuse=None):
         with tf.variable_scope(scope, reuse=reuse):
 
+            print('78: %s' % inputs.get_shape())
             bn = BN(self.is_training)
 
             t = lrelu(conv2d(inputs, 64)) # no bn here
