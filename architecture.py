@@ -22,13 +22,16 @@ class VAEGAN:
             bn = BN(self.is_training)
 
             t = lrelu(bn(conv2d(inputs, 64, strides=4)))
+            print('25: %s' % t.get_shape())
             t = lrelu(bn(conv2d(inputs, 128, strides=4)))
+            print('27: %s' % t.get_shape())
             t = lrelu(bn(conv2d(inputs, 256)))
+            print('29: %s' % t.get_shape())
             
             t = flatten(t)
-            print('29: %s' % t.get_shape())
+            print('32: %s' % t.get_shape())
             t = lrelu(bn(dense(t, 512)))
-            print('31: %s' % t.get_shape())
+            print('34: %s' % t.get_shape())
             
             # keep means and logsigma for computing variational loss
             means = lrelu(dense(t, self.zsize))
