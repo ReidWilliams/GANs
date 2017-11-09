@@ -22,8 +22,8 @@ class VAEGAN:
             bn = BN(self.is_training)
 
             t = lrelu(bn(conv2d(inputs, 64)))
-            t = lrelu(bn(conv2d(inputs, 128)))
-            t = lrelu(bn(conv2d(inputs, 256)))
+            t = lrelu(bn(conv2d(t, 128)))
+            t = lrelu(bn(conv2d(t, 256)))
             
             t = flatten(t)
             t = lrelu(bn(dense(t, 512)))
