@@ -26,7 +26,9 @@ class VAEGAN:
             t = lrelu(bn(conv2d(inputs, 256)))
             
             t = flatten(t)
+            print('29: %s' % t.get_shape())
             t = lrelu(bn(dense(t, 512)))
+            print('31: %s' % t.get_shape())
             
             # keep means and logsigma for computing variational loss
             means = lrelu(dense(t, self.zsize))
@@ -76,6 +78,7 @@ class VAEGAN:
 
             # use this vector to compare similarity of two images
             similarity = flatten(t)
+            print('81: %s' % similarity.get_shape())
 
             # output classification: probability an image is fake
             logits = dense(similarity, 1)
