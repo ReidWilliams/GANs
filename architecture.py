@@ -58,10 +58,9 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = dense(inputs, 4*5*1024)
-            t = lrelu(bn(reshape(t, (tf.shape(t)[0], 4, 5, 1024))))
+            t = dense(inputs, 4*5*512)
+            t = lrelu(bn(reshape(t, (tf.shape(t)[0], 4, 5, 512))))
 
-            t = lrelu(bn(conv2dtr(t, 1024)))
             t = lrelu(bn(conv2dtr(t, 512)))
             t = lrelu(bn(conv2dtr(t, 256)))
             t = lrelu(bn(conv2dtr(t, 128)))
