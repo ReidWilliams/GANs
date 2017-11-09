@@ -22,8 +22,7 @@ class VAEGAN:
             bn = BN(self.is_training)
 
             t = lrelu(bn(conv2d(inputs, 64, strides=4)))
-            print('25: %s' % t.get_shape())
-            t = lrelu(bn(conv2d(inputs, 128)))
+            t = lrelu(bn(conv2d(inputs, 128, strides=4)))
             t = lrelu(bn(conv2d(inputs, 256)))
             
             t = flatten(t)
