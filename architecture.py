@@ -22,18 +22,13 @@ class VAEGAN:
             bn = BN(self.is_training)
 
             t = lrelu(bn(conv2d(inputs, 64)))
-            # print('25: %s' % t.get_shape())
             t = lrelu(bn(conv2d(t, 128)))
-            # print('27: %s' % t.get_shape())
             t = lrelu(bn(conv2d(t, 256)))
-            # print('29: %s' % t.get_shape())
             t = lrelu(bn(conv2d(t, 512)))
             t = lrelu(bn(conv2d(t, 1024)))
             
             t = flatten(t)
-            # print('32: %s' % t.get_shape())
             t = lrelu(bn(dense(t, 512)))
-            # print('34: %s' % t.get_shape())
             
             # keep means and logsigma for computing variational loss
             means = lrelu(dense(t, self.zsize))
@@ -74,7 +69,6 @@ class VAEGAN:
     def discriminator(self, inputs, scope='discriminator', reuse=None):
         with tf.variable_scope(scope, reuse=reuse):
 
-            print('78: %s' % inputs.get_shape())
             bn = BN(self.is_training)
 
             t = lrelu(conv2d(inputs, 64)) # no bn here
@@ -85,7 +79,6 @@ class VAEGAN:
 
             # use this vector to compare similarity of two images
             similarity = flatten(t)
-            print('81: %s' % similarity.get_shape())
 
             # output classification: probability an image is fake
             logits = dense(similarity, 1)
