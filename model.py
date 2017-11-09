@@ -71,9 +71,9 @@ class Model:
         self.E, self.E_logsigmas, self.E_means = self.arch.encoder(self.X)
 
         # generator that uses encoder output
-        # self.Genc = self.arch.generator(self.E)
-        # # generator that uses Z random draws
-        # self.Gz = self.arch.generator(self.Z, reuse=True)
+        self.Genc = self.arch.generator(self.E)
+        # generator that uses Z random draws
+        self.Gz = self.arch.generator(self.Z, reuse=True)
 
         # # discriminator connected to real image input (X)
         # self.Dreal, self.Dreal_logits, self.Dreal_similarity = \
