@@ -15,7 +15,7 @@ def makedirs(d):
 class Model:
     def __init__(self, training_directory, batch_size=64, img_shape=(64, 64),
         E_lr=0.0004, G_lr=0.0004, D_lr=0.0004, E_beta1=0.5, G_beta1=0.5, D_beta1=0.5, 
-        gamma=1.0, zsize=128, save_freq=10, epochs=10000, 
+        gamma=2.5, zsize=128, save_freq=10, epochs=10000, 
         sess=None, checkpoints_path=None):
 
         self.batch_size = batch_size
