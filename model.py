@@ -232,12 +232,13 @@ class Model:
         rows = self.batch_size // cols
         # feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
         imgs = self.sess.run(self.Genc, feed_dict={ self.X: feed, self.is_training: False })
+        imgs = pixels01(imgs)
         for r in range(0, int(rows/2)):
             for c in range(0, cols):
                 imgs[r*2*cols + c] = feed[r*cols + c]
 
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
-        tiled = pixels01(tile(imgs, (rows, cols)))
+        tiled = tile(imgs, (rows, cols))
         as_ints = (tiled * 255.0).astype('uint8')
         Image.fromarray(as_ints).save(path)
         self.output_img_idx += 1 
