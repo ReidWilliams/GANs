@@ -228,11 +228,18 @@ class Model:
         self.saver.save(self.sess, self.checkpoints_path)
 
     def output_examples(self, feed):
+        cols = 8
+        rows = self.batch_size // cols
         # feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
         imgs = self.sess.run(self.Genc, feed_dict={ self.X: feed, self.is_training: False })
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
-        tiled = tile(imgs, (int(self.batch_size/8), 8))
-        as_ints = (pixels01(tiled) * 255.0).astype('uint8')
+        tiled = pixels01(tile(imgs, (rows, cols)))
+        
+        for r in range(0, rows, 2):
+            for c in range(0, cols):
+                tiled[r*cols + col] = feed[r*cols + col]
+
+        as_ints = (tiled * 255.0).astype('uint8')
         Image.fromarray(as_ints).save(path)
         self.output_img_idx += 1 
 
