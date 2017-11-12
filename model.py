@@ -199,11 +199,12 @@ class Model:
                 xfeed = pixels11(self.feed.feed(batch)) # conver to [-1, 1]
                 zfeed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
 
-                # train discriminator
-                _, summary = self.sess.run(
-                    [ self.D_train, self.D_stats ],
-                    feed_dict={ self.X: xfeed, self.Z: zfeed, self.is_training: True })
-                self.writer.add_summary(summary, logcounter)
+                # train discriminator (twice)
+                for i in range(2):
+                    _, summary = self.sess.run(
+                        [ self.D_train, self.D_stats ],
+                        feed_dict={ self.X: xfeed, self.Z: zfeed, self.is_training: True })
+                    self.writer.add_summary(summary, logcounter)
 
                 # train generator
                 _, summary = self.sess.run(
