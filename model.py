@@ -14,7 +14,7 @@ def makedirs(d):
 
 class Model:
     def __init__(self, training_directory, batch_size=64, img_shape=(64, 64),
-        G_lr=0.00005, D_lr=0.00005, 
+        G_lr=0.0001, D_lr=0.0001, G_beta1=0.5, D_beta1=0.5,
         zsize=128, save_freq=10, epochs=10000, 
         sess=None, checkpoints_path=None):
 
@@ -22,6 +22,8 @@ class Model:
         self.img_shape = img_shape + (3,) # add channels
         self.G_lr = G_lr
         self.D_lr = D_lr
+        self.G_beta1 = G_beta1
+        self.D_beta1 = D_beta1
 
         # size of latent vector
         self.zsize = zsize
@@ -85,20 +87,21 @@ class Model:
             self.arch.discriminator(interpolated, reuse=True)
 
         # tf.gradients returns a list of sum(dy/dx) for each x in xs.
-        gradients = tf.gradients(Dinterpolated_logits, [interpolated, ])[0]
+        gradients = tf.gradients(Dinterpolated_logits, [interpolated])[0]
         grad_l2 = tf.sqrt(tf.reduce_sum(tf.square(gradients), axis=[1, 2, 3]))
         grad_penalty = tf.reduce_mean(tf.square(grad_l2 - 1.0))
 
         self.D_loss = tf.reduce_mean(self.Dreal_logits - self.Dz_logits) + grad_penalty
         self.G_loss = tf.reduce_mean(self.Dz_logits)
 
+        print(self.D_loss.get_shape())
+
     def build_optimizers(self):
         G_vars = [i for i in tf.trainable_variables() if 'generator' in i.name]
         D_vars = [i for i in tf.trainable_variables() if 'discriminator' in i.name]
   
-        # RMSProp optimizer via paper
-        G_opt = tf.train.RMSPropOptimizer(learning_rate=self.G_lr)
-        D_opt = tf.train.RMSPropOptimizer(learning_rate=self.D_lr)
+        G_opt = tf.train.AdamOptimizer(learning_rate=self.G_lr, beta1=self.G_beta1)
+        D_opt = tf.train.AdamOptimizer(learning_rate=self.D_lr, beta1=self.D_beta1)
         
         self.G_train = G_opt.minimize(self.G_loss, var_list=G_vars)
         self.D_train = D_opt.minimize(self.D_loss, var_list=D_vars)

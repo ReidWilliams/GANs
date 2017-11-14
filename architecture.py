@@ -69,7 +69,7 @@ class VAEGAN:
     def discriminator(self, inputs, scope='discriminator', reuse=None):
         with tf.variable_scope(scope, reuse=reuse):
 
-            bn = BN(self.is_training)
+            bn = BN(True) # discriminator is always training
 
             t = lrelu(conv2d(inputs, 64)) # no bn here
             t = lrelu(bn(conv2d(t, 128)))
