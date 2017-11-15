@@ -25,6 +25,7 @@ class VAEGAN:
             t = lrelu(bn(conv2d(t, 128)))
             t = lrelu(bn(conv2d(t, 256)))
             t = lrelu(bn(conv2d(t, 512)))
+            t = lrelu(bn(conv2d(t, 512))) # duplicate this one to get resolution
             t = lrelu(bn(conv2d(t, 1024)))
             
             t = flatten(t)
@@ -53,9 +54,10 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = dense(inputs, 4*5*512)
-            t = lrelu(bn(reshape(t, (tf.shape(t)[0], 4, 5, 512))))
+            t = dense(inputs, 4*7*512)
+            t = lrelu(bn(reshape(t, (tf.shape(t)[0], 4, 7, 512))))
 
+            t = lrelu(bn(conv2dtr(t, 512)))
             t = lrelu(bn(conv2dtr(t, 512)))
             t = lrelu(bn(conv2dtr(t, 256)))
             t = lrelu(bn(conv2dtr(t, 128)))
@@ -74,6 +76,7 @@ class VAEGAN:
             t = lrelu(conv2d(inputs, 64)) # no bn here
             t = lrelu(bn(conv2d(t, 128)))
             t = lrelu(bn(conv2d(t, 256)))
+            t = lrelu(bn(conv2d(t, 512)))
             t = lrelu(bn(conv2d(t, 512)))
             t = lrelu(bn(conv2d(t, 1024)))
 
