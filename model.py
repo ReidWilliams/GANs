@@ -191,8 +191,7 @@ class Model:
         printnow('saving session and examples every %s batches' % self.save_freq)
         logcounter = 0
 
-        # images to encode for saving examples
-        # example_feed = np.copy(self.feed.feed(21))
+        example_feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
 
         for epoch in range(self.epochs):            
             for batch in range(batches):
@@ -212,26 +211,25 @@ class Model:
                     feed_dict={ self.X: xfeed, self.Z: zfeed, self.is_training: True })
                 self.writer.add_summary(summary, logcounter)
 
-                # train encoder
-                _, summary = self.sess.run(
-                    [self.E_train, self.E_stats],
-                    feed_dict={ self.X: xfeed, self.Z: zfeed, self.is_training: True })
-                self.writer.add_summary(summary, logcounter)
+                # # train encoder
+                # _, summary = self.sess.run(
+                #     [self.E_train, self.E_stats],
+                #     feed_dict={ self.X: xfeed, self.Z: zfeed, self.is_training: True })
+                # self.writer.add_summary(summary, logcounter)
 
                 logcounter += 1
 
                 if (batch % self.save_freq == 0):
                     printnow('Epoch %s, batch %s/%s, saving session and examples' % (epoch, batch, batches))
                     self.save_session()
-                    self.output_examples()
+                    self.output_examples(example_feed)
 
     def save_session(self):
         self.saver.save(self.sess, self.checkpoints_path)
 
-    def output_examples(self):
+    def output_examples(self, feed):
         cols = 8
         rows = self.batch_size // cols
-        feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
         imgs = self.sess.run(self.Gz, feed_dict={ self.Z: feed, self.is_training: False })
         imgs = pixels01(imgs)
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
