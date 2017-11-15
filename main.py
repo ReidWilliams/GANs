@@ -4,8 +4,8 @@ from model import Model
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--datadir', required=True, dest='datadir')
-parser.add_argument('--savefreq', default=10, dest='save_freq')
-parser.add_argument('--batchsize', default=64, dest='batch_size')
+parser.add_argument('--savefreq', default=10, type=int, dest='save_freq')
+parser.add_argument('--batchsize', default=64, type=int, dest='batch_size')
 parsed = parser.parse_args()
 
 model = Model(parsed.datadir, save_freq=parsed.save_freq, 
