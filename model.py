@@ -232,7 +232,7 @@ class Model:
         cols = 8
         rows = self.batch_size // cols
         feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
-        imgs = self.sess.run(self.Genc, feed_dict={ self.X: feed, self.is_training: False })
+        imgs = self.sess.run(self.Gz, feed_dict={ self.Z: feed, self.is_training: False })
         imgs = pixels01(imgs)
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
         tiled = tile(imgs, (rows, cols))
