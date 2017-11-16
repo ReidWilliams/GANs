@@ -55,7 +55,7 @@ class Feed:
 		# full paths
 		cache_filepaths = [os.path.join(self.data_directory, f) for f in self.filenames[start:end]]
 
-		self.imgs = np.array([sp.ndimage.imread(f) for f in cache_filepaths])
+		self.imgs = np.array([sp.ndimage.imread(f, mode='RGB') for f in cache_filepaths])
 		self.cached_batch_start = batch_idx
 
 	def feed(self, batch_idx):
