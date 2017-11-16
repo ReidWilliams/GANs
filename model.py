@@ -13,7 +13,7 @@ def makedirs(d):
           
 
 class Model:
-    def __init__(self, training_directory, batch_size=64, img_shape=(64, 64),
+    def __init__(self, feed, batch_size=64, img_shape=(64, 64),
         G_lr=0.0004, D_lr=0.0004, G_beta1=0.5, D_beta1=0.5, 
         zsize=128, save_freq=10, epochs=10000, 
         sess=None, checkpoints_path=None):
@@ -38,7 +38,6 @@ class Model:
 
         pwd = os.getcwd()
         self.dirs = {
-            'training':    training_directory,
             'output':      os.path.join(pwd, 'output'),
             'logs':        os.path.join(pwd, 'logs'),
             'checkpoints': os.path.join(pwd, 'checkpoints')
@@ -60,7 +59,7 @@ class Model:
             if os.path.isfile(os.path.join(self.dirs['output'], f))])
 
         # data feed    
-        self.feed = Feed(self.dirs['training'], self.batch_size, shuffle=True)
+        self.feed = feed
         # bool used by batch normalization. BN behavior is different when training
         # vs predicting
         self.is_training = tf.placeholder(tf.bool)
