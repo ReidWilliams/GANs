@@ -19,6 +19,11 @@ class Model:
         sess=None, checkpoints_path=None):
 
         self.batch_size = batch_size
+
+        if ((img_shape[0] % 32 != 0) or (img_shape[1] % 32 != 0)):
+            raise ValueException("Image dimensions need to be divisible by 32. \
+                Dimensions received was %s." % img_shape)
+
         self.img_shape = img_shape + (3,) # add channels
         self.G_lr = G_lr
         self.D_lr = D_lr

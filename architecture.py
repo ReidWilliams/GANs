@@ -20,16 +20,18 @@ class VAEGAN:
             # shrink down to a base level of filters. This is lowest number of filters
             # before wiring to 3 channel image (rgb).
 
+            minirows = self.img_shape[0] // 32
+            minicols = self.img_shape[1] // 32 
+
             bn = BN(self.is_training)
 
-            t = dense(inputs, 4*7*512)
-            t = lrelu(bn(reshape(t, (tf.shape(t)[0], 4, 7, 512))))
+            t = dense(inputs, minirows*minicols*512)
+            t = lrelu(bn(reshape(t, (tf.shape(t)[0], minirows, minicols, 512))))
 
             t = lrelu(bn(conv2dtr(t, 512)))
             t = lrelu(bn(conv2dtr(t, 256)))
             t = lrelu(bn(conv2dtr(t, 128)))
             t = lrelu(bn(conv2dtr(t, 64)))
-            t = lrelu(bn(conv2dtr(t, 32)))
 
             # final conv2d  transpose to get to filter depth of 3, for rgb channels
             logits = conv2dtr(t, self.img_shape[2])
@@ -41,8 +43,7 @@ class VAEGAN:
 
             bn = BN(self.is_training)
 
-            t = lrelu(conv2d(inputs, 32)) # no bn here
-            t = lrelu(bn(conv2d(t, 64)))
+            t = lrelu(conv2d(inputs, 64)) # no bn here
             t = lrelu(bn(conv2d(t, 128)))
             t = lrelu(bn(conv2d(t, 256)))
             t = lrelu(bn(conv2d(t, 512)))
