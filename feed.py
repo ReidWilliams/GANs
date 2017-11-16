@@ -21,6 +21,11 @@ class Feed:
 		# index of first batch preloaded in memory
 		self.cached_batch_start = -sys.maxsize
 
+	def get_img_shape(self):
+		path = os.path.join(self.data_directory, self.filenames[0])
+		img = np.array(sp.ndimage.imread(path))
+		return (img.shape[0], img.shape[1])
+
 	# translate from global batch index to cached batch index
 	# load more data if necessary
 	def cidx(self, batch_idx):
@@ -50,7 +55,7 @@ class Feed:
 		# full paths
 		cache_filepaths = [os.path.join(self.data_directory, f) for f in self.filenames[start:end]]
 
-		self.imgs = np.array([sp.ndimage.imread(f) for f in cache_filepaths])
+		self.imgs = np.array([sp.ndimage.imread(f, mode='RGB') for f in cache_filepaths])
 		self.cached_batch_start = batch_idx
 
 	def feed(self, batch_idx):

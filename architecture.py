@@ -14,52 +14,24 @@ class VAEGAN:
         # is the model being trained
         self.is_training = is_training
 
-    def encoder(self, inputs, scope='encoder', reuse=None):
-        ''' Returns encoder graph. Inputs is a placeholder of size
-        (None, rows, cols, channels) '''
-        with tf.variable_scope(scope, reuse=reuse):
-
-            bn = BN(self.is_training)
-
-            t = lrelu(bn(conv2d(inputs, 64)))
-            t = lrelu(bn(conv2d(t, 128)))
-            t = lrelu(bn(conv2d(t, 256)))
-            
-            t = flatten(t)
-            t = lrelu(bn(dense(t, 512)))
-            
-            # keep means and logsigma for computing variational loss
-            means = lrelu(dense(t, self.zsize))
-            logsigmas = lrelu(dense(t, self.zsize))
-            
-            sigmas = tf.exp(0.5 * logsigmas) # see Hands on machine learning, Geron, p. 435
-            sample = tf.random_normal(tf.shape(sigmas), dtype=tf.float32)
-            output = sample * sigmas + means
-          
-            return output, logsigmas, means
-
-    def latent_loss(self, logsigmas, means):
-        with tf.variable_scope('latent_loss'):
-            loss = 0.5 * tf.reduce_mean(tf.exp(logsigmas) + tf.square(means) - 1 - logsigmas)
-            return loss
-
     def generator(self, inputs, scope='generator', reuse=None):
         with tf.variable_scope(scope, reuse=reuse):
             # deconvolution mirrors convolution, start with many filters, then
             # shrink down to a base level of filters. This is lowest number of filters
             # before wiring to 3 channel image (rgb).
 
+            minirows = self.img_shape[0] // 32
+            minicols = self.img_shape[1] // 32 
+
             bn = BN(self.is_training)
 
-            # number of pixels on each side for starting 2d dimensions
-            _len = int(self.img_shape[0] / 16)
-
-            t = dense(inputs, _len*_len*512)
-            t = lrelu(bn(reshape(t, (tf.shape(t)[0], _len, _len, 512))))
+            t = dense(inputs, minirows*minicols*512)
+            t = lrelu(bn(reshape(t, (tf.shape(t)[0], minirows, minicols, 512))))
 
             t = lrelu(bn(conv2dtr(t, 512)))
             t = lrelu(bn(conv2dtr(t, 256)))
             t = lrelu(bn(conv2dtr(t, 128)))
+            t = lrelu(bn(conv2dtr(t, 64)))
 
             # final conv2d  transpose to get to filter depth of 3, for rgb channels
             logits = conv2dtr(t, self.img_shape[2])
@@ -75,6 +47,7 @@ class VAEGAN:
             t = lrelu(bn(conv2d(t, 128)))
             t = lrelu(bn(conv2d(t, 256)))
             t = lrelu(bn(conv2d(t, 512)))
+            t = lrelu(bn(conv2d(t, 1024)))
 
             # use this vector to compare similarity of two images
             similarity = flatten(t)

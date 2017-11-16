@@ -77,6 +77,3 @@ def tile(images, size):
     else:
         raise ValueError('in merge(images,size) images parameter '
                      'must have dimensions: HxW or HxWx3 or HxWx4')
-
-
-
