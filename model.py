@@ -74,27 +74,34 @@ class Model:
 
         # discriminator connected to real image input (X)
         self.Dreal, self.Dreal_logits, self.Dreal_similarity = \
-            self.arch.discriminator(self.X)
+            self.arch.discriminator(self.X, training=True)
 
         # discriminator connected to Z -> generator
+        # for training
         self.Dz, self.Dz_logits, _ = \
-            self.arch.discriminator(self.Gz, reuse=True)
+            self.arch.discriminator(self.Gz, training=True, reuse=True)
+
+        # discriminator connected to Z -> generator
+        # for training G
+        self.Dz_eval, self.Dz_logits_eval, _ = \
+            self.arch.discriminator(self.Gz, training=False, reuse=True)
 
     def build_losses(self):
-        self.Dreal_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=(tf.ones_like(self.Dreal_logits) - 0.25),
-            logits=self.Dreal_logits))
+        # Wasserstein GAN with gradient penalty
+        # from github.com/lilianweng/unified-gan-tensorflow
+        epsilon = tf.random_uniform([self.batch_size, 1, 1, 1], 0.0, 1.0)
+        interpolated = epsilon * self.X + (1 - epsilon) * self.Gz
 
-        self.Dz_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=tf.zeros_like(self.Dz_logits),
-            logits=self.Dz_logits))
+        _, Dinterpolated_logits, _ = \
+            self.arch.discriminator(interpolated, training=True, reuse=True)
 
-        # minimize these with optimizer
-        self.D_loss = self.Dreal_loss + self.Dz_loss
+        # tf.gradients returns a list of sum(dy/dx) for each x in xs.
+        gradients = tf.gradients(Dinterpolated_logits, [interpolated])[0]
+        grad_l2 = tf.sqrt(tf.reduce_sum(tf.square(gradients), axis=[1, 2, 3]))
+        grad_penalty = tf.reduce_mean(tf.square(grad_l2 - 1.0))
 
-        self.G_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(
-            labels=tf.ones_like(self.Dz_logits),
-            logits=self.Dz_logits))
+        self.D_loss = tf.reduce_mean(self.Dreal_logits - self.Dz_logits) + grad_penalty
+        self.G_loss = tf.reduce_mean(self.Dz_logits_eval)
 
     def build_optimizers(self):
         G_vars = [i for i in tf.trainable_variables() if 'generator' in i.name]

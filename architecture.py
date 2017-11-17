@@ -38,10 +38,10 @@ class VAEGAN:
             return tanh(logits)
 
 
-    def discriminator(self, inputs, scope='discriminator', reuse=None):
+    def discriminator(self, inputs, training=True, scope='discriminator', reuse=None):
         with tf.variable_scope(scope, reuse=reuse):
 
-            bn = BN(self.is_training)
+            bn = BN(training) # discriminator is always training
 
             t = lrelu(conv2d(inputs, 64)) # no bn here
             t = lrelu(bn(conv2d(t, 128)))
