@@ -189,7 +189,7 @@ class Model:
 
     def output_examples(self):
         feed = self.example_noise.eval()
-        cols = 8
+        cols = 4
         rows = self.batch_size // cols
         imgs = self.sess.run(self.Gz, feed_dict={ self.Z: feed, self.is_training: False })
         imgs = pixels01(imgs)
