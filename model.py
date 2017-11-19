@@ -14,7 +14,7 @@ def makedirs(d):
 
 class Model:
     def __init__(self, feed, batch_size=64, img_shape=(64, 64),
-        G_lr=0.0004, D_lr=0.0004, G_beta1=0.5, D_beta1=0.5, 
+        G_lr=0.0001, D_lr=0.0001, G_beta1=0.5, D_beta1=0.5, 
         zsize=128, save_freq=10,
         sess=None, checkpoints_path=None):
 
@@ -161,8 +161,8 @@ class Model:
                 xfeed = pixels11(self.feed.feed(batch)) # conver to [-1, 1]
                 zfeed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
 
-                # train discriminator (twice)
-                for i in range(2):
+                # train discriminator
+                for i in range(5):
                     _, summary = self.sess.run(
                         [ self.D_train, self.D_stats ],
                         feed_dict={ self.X: xfeed, self.Z: zfeed, self.is_training: True })
