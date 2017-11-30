@@ -171,9 +171,12 @@ class Model:
         self.saver.save(self.sess, self.checkpoints_path)
 
     def output_examples(self, feed):
-        cols = 8
-        rows = self.batch_size // cols
+        cols = 4
+        # rows = self.batch_size // cols
+        rows = 4
+        nimgs = cols*rows
         imgs = self.sess.run(self.Gz, feed_dict={ self.Z: feed, self.is_training: False })
+        imgs = imgs[:nimgs]
         imgs = pixels01(imgs)
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
         tiled = tile(imgs, (rows, cols))
