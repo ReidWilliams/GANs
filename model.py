@@ -15,7 +15,7 @@ def makedirs(d):
 class Model:
     def __init__(self, feed, batch_size=64, img_shape=(64, 64),
         G_lr=0.0004, D_lr=0.0004, G_beta1=0.5, D_beta1=0.5, 
-        zsize=128, save_freq=10, epochs=10000, 
+        zsize=128, save_freq=10,
         sess=None, checkpoints_path=None):
 
         self.batch_size = batch_size
@@ -32,7 +32,6 @@ class Model:
 
         # size of latent vector
         self.zsize = zsize
-        self.epochs = epochs
         # save session and examples after this many batches
         self.save_freq = int(save_freq)
 
@@ -108,6 +107,14 @@ class Model:
         self.D_train = D_opt.minimize(self.D_loss, var_list=D_vars)
 
     def setup_session(self):
+        # store epoch as tf variable so we can save it in the session
+        self.epoch = tf.get_variable('epoch', dtype='int32', initializer=tf.constant(0))
+
+        # random numbers to generate outputs. Store in tf variable so it gets
+        # stored in session.
+        self.example_noise = tf.get_variable('noise', dtype='float32', 
+            initializer=tf.constant(np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')))
+        
         self.saver = tf.train.Saver()
         
         try:
@@ -140,9 +147,9 @@ class Model:
         printnow('saving session and examples every %s batches' % self.save_freq)
         logcounter = 0
 
-        example_feed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
+        epoch = self.epoch.eval()
 
-        for epoch in range(self.epochs):            
+        while True:            
             for batch in range(batches):
                 xfeed = pixels11(self.feed.feed(batch)) # conver to [-1, 1]
                 zfeed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
@@ -164,8 +171,11 @@ class Model:
 
                 if (batch % self.save_freq == 0):
                     printnow('Epoch %s, batch %s/%s, saving session and examples' % (epoch, batch, batches))
+                    self.sess.run(self.epoch.assign(epoch))
                     self.save_session()
-                    self.output_examples(example_feed)
+                    self.output_examples()
+
+            epoch += 1 
 
     def save_session(self):
         self.saver.save(self.sess, self.checkpoints_path)
