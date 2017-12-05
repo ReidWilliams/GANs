@@ -77,14 +77,8 @@ class Model:
             self.arch.discriminator(self.X, training=True)
 
         # discriminator connected to Z -> generator
-        # for training
         self.Dz, self.Dz_logits, _ = \
             self.arch.discriminator(self.Gz, training=True, reuse=True)
-
-        # discriminator connected to Z -> generator
-        # for training G
-        self.Dz_eval, self.Dz_logits_eval, _ = \
-            self.arch.discriminator(self.Gz, training=False, reuse=True)
 
     def build_losses(self):
         # Wasserstein GAN with gradient penalty
@@ -101,7 +95,7 @@ class Model:
         grad_penalty = tf.reduce_mean(tf.square(grad_l2 - 1.0))
 
         self.D_loss = tf.reduce_mean(self.Dreal_logits - self.Dz_logits) + grad_penalty
-        self.G_loss = tf.reduce_mean(self.Dz_logits_eval)
+        self.G_loss = tf.reduce_mean(self.Dz_logits)
 
     def build_optimizers(self):
         G_vars = [i for i in tf.trainable_variables() if 'generator' in i.name]
@@ -187,11 +181,13 @@ class Model:
     def save_session(self):
         self.saver.save(self.sess, self.checkpoints_path)
 
-    def output_examples(self):
-        feed = self.example_noise.eval()
+    def output_examples(self, feed):
         cols = 4
-        rows = self.batch_size // cols
+        # rows = self.batch_size // cols
+        rows = 4
+        nimgs = cols*rows
         imgs = self.sess.run(self.Gz, feed_dict={ self.Z: feed, self.is_training: False })
+        imgs = imgs[:nimgs]
         imgs = pixels01(imgs)
         path = os.path.join(self.dirs['output'], '%06d.jpg' % self.output_img_idx)
         tiled = tile(imgs, (rows, cols))

@@ -41,7 +41,7 @@ class VAEGAN:
     def discriminator(self, inputs, training=True, scope='discriminator', reuse=None):
         with tf.variable_scope(scope, reuse=reuse):
 
-            bn = BN(training) # discriminator is always training
+            bn = BN(training)
 
             t = lrelu(conv2d(inputs, 64)) # no bn here
             t = lrelu(bn(conv2d(t, 128)))
