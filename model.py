@@ -78,7 +78,7 @@ class Model:
             self.arch.discriminator(self.X)
 
         # discriminator connected to Z -> generator
-        self.Dz, self.Dz_logits, _ = \
+        self.Dz, self.Dz_logits, self.Dz_similarity = \
             self.arch.discriminator(self.Gz, reuse=True)
 
     def build_losses(self):
