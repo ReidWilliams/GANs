@@ -4,7 +4,7 @@ import numpy as np
 from ops import BN, conv2d, conv2dtr, dense, lrelu, \
                 flatten, reshape, sigmoid, tanh
 
-class VAEGAN:
+class GAN:
     ''' Generative adversarial network with encoder. '''
     def __init__(self, is_training, img_shape=(64, 64, 3), zsize=128):
         # Input image shape: x, y, channels
