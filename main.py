@@ -4,10 +4,19 @@ from model import Model
 from feed import Feed
 
 parser = argparse.ArgumentParser()
+# Directory for training data. Model assumes every file in the data directory
+# is a training image (including hidden files)
 parser.add_argument('--datadir', required=True, dest='datadir')
+
+# How often to checkpoint the training weights and output images 
 parser.add_argument('--savefreq', default=10, type=int, dest='save_freq')
 parser.add_argument('--batchsize', default=64, type=int, dest='batch_size')
+
+# Latent vector size
 parser.add_argument('--zsize', default=128, type=int, dest='zsize')
+
+# Rows and cols of output image tile. Several output images get tiled into
+# one image that is saved 
 parser.add_argument('--output_cols', default=8, type=int, dest='output_cols')
 parser.add_argument('--output_rows', default=8, type=int, dest='output_rows')
 parsed = parser.parse_args()
