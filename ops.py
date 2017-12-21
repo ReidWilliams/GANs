@@ -1,5 +1,9 @@
 import tensorflow as tf
 
+# It's nice to abstract your own ops, because then you can set parameters
+# that are the same for all units in an architecture and the architecture code
+# stays really clean
+
 def conv2d(inputs, filters, strides=2):
     return tf.layers.conv2d(inputs, filters, 5, strides=strides, padding='same',
         kernel_initializer=tf.truncated_normal_initializer(stddev=0.02),
