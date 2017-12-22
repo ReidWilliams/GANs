@@ -12,7 +12,9 @@ class GAN:
         self.img_shape = img_shape
         # latent (z) vector length
         self.zsize = zsize
-        # is the model being trained
+        # is the generator being trained
+        # Expect this to be a TF placeholder that is set true or false
+        # depending on whether model is training or generating
         self.is_training = is_training
 
     # latent vector of size zsize goes in, an image of size img_shape comes out
