@@ -11,7 +11,7 @@ This guy was made with a GAN.
 
 You'll need Python 3, Tensorflow, NumPy, Pillow, and SciPy. You'll also need a training dataset. You can try starting with the CelebA celebrity faces [dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).
 
-All images in the training set need to be the same size and both width and height dimensions need to be a multiple of 32. Rather than build cropping/resizing of the dataset into the model, I use [ImageMagick](https://www.imagemagick.org). I have an ImageMagick cheat sheet [here](https://gist.github.com/ReidWilliams/53845baae2d2d2cc5fe49ca2d7c90b8a#file-imagemagick-sh).
+All images in the training set need to be the same size and both width and height dimensions need to be a multiple of 32. Rather than doing cropping/resizing of the dataset in the model, I use [ImageMagick](https://www.imagemagick.org). I have an ImageMagick cheat sheet [here](https://gist.github.com/ReidWilliams/53845baae2d2d2cc5fe49ca2d7c90b8a#file-imagemagick-sh).
 
 Once you have everything installed and a dataset:
 ```
