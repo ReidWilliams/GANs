@@ -11,7 +11,7 @@ All images in the training set need to be the same size and both width and heigh
 
 Once you have everything installed and a dataset:
 ```
-> python main.py --datadir /path/to/data
+$ python main.py --datadir /path/to/data
 ```
 
 The model can handle various training image sizes as long as both width and height are divisible by 32. It will automagically figure out image size when it loads the training images. As image sizes get larger, the model does not add additional convolutional layers, it just increases the number of units in the generator and discriminator fully connected layers. This may limit how large you can go. I've trained models on 576x256 pixel images on a 12GB GPU card (with a batch size of 16).
