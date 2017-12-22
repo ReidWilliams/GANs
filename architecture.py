@@ -50,7 +50,16 @@ class GAN:
     def discriminator(self, inputs, scope='discriminator', reuse=None):
         with tf.variable_scope(scope, reuse=reuse):
 
-            bn = BN(self.is_training)
+            # Set discriminator to always be training. Reason for doing this is
+            # For the WGAN gradient loss (which is not the default loss function for
+            # this model, still uses this architecture), the loss function has an expression
+            # which is the gradient of an instance of the discriminator. Putting that
+            # into the optimizer creates a dependency on the second order gradient of the
+            # disriminator. Batch normalization where the training vs running flag is itself
+            # a TF variable (rather than normal python boolean) seems to break this. Easier to
+            # just set to True because in this model we only ever use the discriminator for
+            # training (to train the generator).
+            bn = BN(True)
 
             t = lrelu(conv2d(inputs, 64)) # no bn here
             t = lrelu(bn(conv2d(t, 128)))
