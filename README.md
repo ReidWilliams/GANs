@@ -20,4 +20,7 @@ Three output directories are created for you: `logs` for logfiles for Tensorboar
 
 There are more command line options. Check out the source for `main.py` for details.
 
+## What can it do?
 
+I'll direct you back to [DCGAN](https://github.com/carpedm20/DCGAN-tensorflow) to see a wider variety of results, but for the best ever neural network generated celebrity face, look no further than:
+![mullet guy](https://raw.githubusercontent.com/ReidWilliams/GANs/cleanup/mulletguy.png)
