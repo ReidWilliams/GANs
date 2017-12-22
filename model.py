@@ -87,7 +87,8 @@ class Model:
         # for feeding random draws of z (latent variable) to the generator
         self.Z = tf.placeholder(tf.float32, (None, self.zsize))
 
-        # generator
+        # Instantiate a generator network. It takes an input
+        # of a latent vector
         self.Gz = self.arch.generator(self.Z)
 
         # discriminator connected to real image input (X)
@@ -130,10 +131,15 @@ class Model:
         G_vars = [i for i in tf.trainable_variables() if 'generator' in i.name]
         D_vars = [i for i in tf.trainable_variables() if 'discriminator' in i.name]
   
+        # Create optimizers.
         G_opt = tf.train.AdamOptimizer(learning_rate=self.G_lr, beta1=self.G_beta1)
         D_opt = tf.train.AdamOptimizer(learning_rate=self.D_lr, beta1=self.D_beta1)
         
-        # pass var_list so that during training of (e.g.) generator, discriminator
+        # In tensor flow, you set up training by handing an optimizer object a tensor
+        # this is the output of a loss function, and (in this case) a set of variables
+        # that can be changed. You get back a training operation that you then run
+        # (see below) to take a step in training.
+        # pass var_list explicitly so that during training of (e.g.) generator, discriminator
         # weights and biases aren't updated.
         self.G_train = G_opt.minimize(self.G_loss, var_list=G_vars)
         self.D_train = D_opt.minimize(self.D_loss, var_list=D_vars)
@@ -196,7 +202,8 @@ class Model:
                 xfeed = pixels11(self.feed.feed(batch)) # convert to [-1, 1]
                 zfeed = np.random.normal(size=(self.batch_size, self.zsize)).astype('float32')
 
-                # train discriminator (possibly more than once)
+                # train discriminator (possibly more than once) by running
+                # the training operation inside the session
                 for i in range(self.D_train_iters):
                     _, summary = self.sess.run(
                         [ self.D_train, self.D_stats ],
