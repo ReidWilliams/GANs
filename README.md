@@ -1,9 +1,11 @@
 # It's the GANs
 A highly commented Tensorflow implementation of DCGAN and WGAN for images.
 
+This repo builds on [DCGAN](https://github.com/carpedm20/DCGAN-tensorflow) but adds lots of comments. If you're learning Tensorflow, deep neural networks, or GANs, it may be a good learning resource. If you just want to apply GANs asap or you really want to experiment with different architectures or loss functions, you may want to check out the [TFGAN](https://research.googleblog.com/2017/12/tfgan-lightweight-library-for.html) library.
+
 ![mullet guy was made with a GAN](https://raw.githubusercontent.com/ReidWilliams/GANs/cleanup/mulletguy.png)
 
-This repo builds on [DCGAN](https://github.com/carpedm20/DCGAN-tensorflow) but adds lots of comments. If you're learning Tensorflow, deep neural networks, or GANs, it may be a good learning resource. If you just want to apply GANs asap or you really want to experiment with different architectures or loss functions, you may want to check out the [TFGAN](https://research.googleblog.com/2017/12/tfgan-lightweight-library-for.html) library.
+This guy was made with a GAN.
 
 ## Getting Started
 
