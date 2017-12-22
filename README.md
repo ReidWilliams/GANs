@@ -3,10 +3,6 @@ A highly commented Tensorflow implementation of DCGAN and WGAN for images.
 
 This repo builds on [DCGAN](https://github.com/carpedm20/DCGAN-tensorflow) but adds lots of comments. If you're learning Tensorflow, deep neural networks, or GANs, it may be a good learning resource. If you just want to apply GANs asap or you really want to experiment with different architectures or loss functions, you may want to check out the [TFGAN](https://research.googleblog.com/2017/12/tfgan-lightweight-library-for.html) library.
 
-![mullet guy was made with a GAN](https://raw.githubusercontent.com/ReidWilliams/GANs/cleanup/mulletguy.png)
-
-This guy was made with a GAN.
-
 ## Getting Started
 
 You'll need Python 3, Tensorflow, NumPy, Pillow, and SciPy. You'll also need a training dataset. You can try starting with the CelebA celebrity faces [dataset](http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html).
@@ -24,4 +20,4 @@ Three output directories are created for you: `logs` for logfiles for Tensorboar
 
 There are more command line options. Check out the source for `main.py` for details.
 
-
+![made with a GAN](https://raw.githubusercontent.com/ReidWilliams/GANs/cleanup/mulletguy.png)
