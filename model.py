@@ -231,11 +231,12 @@ class Model:
     def save_session(self):
         self.saver.save(self.sess, self.checkpoints_path)
 
-    def output_examples(self, feed):
+    def output_examples(self):
         cols = self.output_cols
         rows = self.output_rows
         nimgs = cols*rows
-        imgs = self.sess.run(self.Gz, feed_dict={ self.Z: feed, self.is_training: False })
+        zfeed = self.example_noise.eval() # need to eval to get value since it's a tf variable 
+        imgs = self.sess.run(self.Gz, feed_dict={ self.Z: zfeed, self.is_training: False })
         imgs = imgs[:nimgs]
         # conver [-1,1] back to [0,1] before saving
         imgs = pixels01(imgs)
